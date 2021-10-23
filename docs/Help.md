@@ -1,10 +1,10 @@
-﻿# Azure IoT Device Simulator (.NET 5, C#) - DPS version - Help
+﻿# Azure IoT Device Simulator (.NET 6, C#) - DPS version - Help
 
 This section describes the different artifacts of the solution and how they work.
 
 ## Application
 The application consists of:
- - an application console (.NET 5, C#)
+ - an application console (.NET 6, C#)
  - configuration files:
    - [appsettings.json](####appsettings.json) (described below)
    - [devicesettings.json](####devicesettings.json) (described below)
