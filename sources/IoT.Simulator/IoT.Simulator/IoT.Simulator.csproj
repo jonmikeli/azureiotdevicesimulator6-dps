@@ -36,6 +36,7 @@ The first version was based on symmetric keys and a new version adds CA X509 key
     <PackageReference Include="Microsoft.Azure.Devices.Client" Version="1.38.1-preview-001" />
     <PackageReference Include="Microsoft.Azure.Devices.Provisioning.Client" Version="1.18.0" />
     <PackageReference Include="Microsoft.Azure.Devices.Provisioning.Transport.Mqtt" Version="1.16.0" />
+    <PackageReference Include="Microsoft.Azure.Devices.Shared" Version="1.29.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0-rc.2.21480.5" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="6.0.0-rc.2.21480.5" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="6.0.0-rc.2.21480.5" />
