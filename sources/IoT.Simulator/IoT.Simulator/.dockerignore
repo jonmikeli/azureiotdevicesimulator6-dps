@@ -1,0 +1,14 @@
+﻿# Elements to ignore by Docker CLI and to be excluded from Docker images
+**/*Dockerfile*
+*.json
+**/*.json
+**/bin/*
+**/obj/*
+*.txt
+*.md
+!*.appsettings.json
+!*.devicesettings.json
+!*.modulessettings.json
+!*.appsettings.*.json
+!*.devicesettings.*.json
+!*.modulessettings.*.json
