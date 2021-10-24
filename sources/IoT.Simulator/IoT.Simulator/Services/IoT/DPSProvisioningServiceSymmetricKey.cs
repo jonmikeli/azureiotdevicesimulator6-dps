@@ -3,7 +3,6 @@ using IoT.Simulator.Settings;
 using IoT.Simulator.Settings.DPS;
 using IoT.Simulator.Tools;
 
-using Microsoft.Azure.Devices.Client;
 using Microsoft.Azure.Devices.Provisioning.Client;
 using Microsoft.Azure.Devices.Shared;
 using Microsoft.Extensions.Logging;
@@ -13,7 +12,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using System;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Security;
@@ -182,7 +180,7 @@ namespace IoT.Simulator.Services
 
                         HttpContent content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
                         var response = await client.PostAsync(_appSettings.DeviceManagementServiceSettings.AddModulesToDeviceRoute, content);
-                       
+
                         if (response != null)
                         {
                             response.EnsureSuccessStatusCode();
