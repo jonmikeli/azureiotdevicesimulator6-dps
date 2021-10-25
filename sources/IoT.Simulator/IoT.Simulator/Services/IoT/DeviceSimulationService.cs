@@ -28,8 +28,7 @@ namespace IoT.Simulator.Services
         private DPSSettings _dpsSettings;
         private SimulationSettingsDevice _simulationSettings;
         private DeviceClient _deviceClient;
-        private string _deviceId;
-        private string _iotHub;
+        private string _deviceId;        
         private int _telemetryInterval;
         private bool _stopProcessing = false;
 
@@ -78,7 +77,7 @@ namespace IoT.Simulator.Services
             if (loggerFactory == null)
                 throw new ArgumentNullException(nameof(loggerFactory), "No logger factory has been provided.");
 
-            _deviceSettingsDelegate = deviceSettingsDelegate;            
+            _deviceSettingsDelegate = deviceSettingsDelegate;
             _simulationSettings = _deviceSettingsDelegate.CurrentValue.SimulationSettings;
             _dpsSettings = dpsSettings.Value;
 
