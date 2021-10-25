@@ -28,7 +28,8 @@ namespace IoT.Simulator.Services
         private DPSSettings _dpsSettings;
         private SimulationSettingsDevice _simulationSettings;
         private DeviceClient _deviceClient;
-        private string _deviceId;        
+        private string _deviceId = string.Empty;
+        private string _iotHub;
         private int _telemetryInterval;
         private bool _stopProcessing = false;
 
