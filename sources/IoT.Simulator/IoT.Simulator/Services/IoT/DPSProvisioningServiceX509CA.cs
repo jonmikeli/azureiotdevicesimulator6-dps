@@ -3,7 +3,6 @@ using IoT.Simulator.Settings;
 using IoT.Simulator.Settings.DPS;
 using IoT.Simulator.Tools;
 
-using Microsoft.Azure.Devices.Client;
 using Microsoft.Azure.Devices.Provisioning.Client;
 using Microsoft.Azure.Devices.Shared;
 using Microsoft.Extensions.Logging;
@@ -14,7 +13,6 @@ using Newtonsoft.Json.Linq;
 
 using System;
 using System.IO;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Security;
@@ -60,7 +58,7 @@ namespace IoT.Simulator.Services
 
             string logPrefix = "system.dps.provisioning".BuildLogPrefix();
             _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::Logger created.");
-            _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::DPS Provisioning service created.");            
+            _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::DPS Provisioning service created.");
         }
 
         public async Task<string> ProvisionDevice()
@@ -83,13 +81,13 @@ namespace IoT.Simulator.Services
                     // X509 device leaf certificate
                     string parameterDeviceId = _deviceSettingsDelegate.CurrentValue.ArtifactId;
 
-                    X509Certificate2 deviceLeafProvisioningCertificate = new X509Certificate2(deviceCertificateFullPath, _dpsSettings.GroupEnrollment.CAX509Settings.Password);                    
+                    X509Certificate2 deviceLeafProvisioningCertificate = new X509Certificate2(deviceCertificateFullPath, _dpsSettings.GroupEnrollment.CAX509Settings.Password);
                     _deviceSettingsDelegate.CurrentValue.DeviceId = deviceLeafProvisioningCertificate.Subject.Remove(0, 3); //delete the 'CN='
 
                     if (parameterDeviceId != _deviceSettingsDelegate.CurrentValue.DeviceId)
                         _logger.LogWarning($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::The leaf certificate has been created for the device '{_deviceSettingsDelegate.CurrentValue.DeviceId}' but the provided deviceId through the settings is '{parameterDeviceId}'. Provisioning will be executed with the deviceId included in the certificate.");
 
-                    _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::Initializing the device provisioning client...");                    
+                    _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::Initializing the device provisioning client...");
 
                     using (var security = new SecurityProviderX509Certificate(deviceLeafProvisioningCertificate))
                     {
@@ -127,7 +125,7 @@ namespace IoT.Simulator.Services
                             else
                                 _logger.LogError($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::No provisioning result has been received.");
                         }
-                    }                    
+                    }
                 }
                 else
                     _logger.LogError($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::No X509 settings have been found.");

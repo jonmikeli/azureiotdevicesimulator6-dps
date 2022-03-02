@@ -7,7 +7,7 @@ namespace IoT.Simulator.Settings.DPS
     /// </summary>
     public enum SecurityType
     {
-        [EnumMember(Value ="SymmetricKey")]
+        [EnumMember(Value = "SymmetricKey")]
         SymmetricKey,
         [EnumMember(Value = "X509SelfSigned")]
         X509SelfSigned,

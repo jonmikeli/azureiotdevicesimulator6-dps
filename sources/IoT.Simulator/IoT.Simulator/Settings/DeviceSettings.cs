@@ -1,5 +1,4 @@
-﻿using IoT.Simulator.Settings.DPS;
-
+﻿
 using Newtonsoft.Json;
 
 namespace IoT.Simulator.Settings

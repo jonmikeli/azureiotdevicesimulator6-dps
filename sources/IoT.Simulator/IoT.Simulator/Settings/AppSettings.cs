@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 
-using Newtonsoft.Json;
-
 namespace IoT.Simulator.Settings
 {
     public class AppSettings

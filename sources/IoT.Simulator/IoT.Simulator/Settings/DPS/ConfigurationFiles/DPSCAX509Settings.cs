@@ -3,17 +3,12 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace IoT.Simulator.Settings.DPS
 {
     public class DPSCAX509Settings
-    {        
+    {
         [JsonProperty("idScope")]
         public string IdScope { get; set; }
 

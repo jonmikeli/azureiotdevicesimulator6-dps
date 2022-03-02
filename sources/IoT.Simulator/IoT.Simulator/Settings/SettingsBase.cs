@@ -1,4 +1,5 @@
 ﻿using IoT.Simulator.Extensions;
+
 using Newtonsoft.Json;
 
 namespace IoT.Simulator.Settings
@@ -33,11 +34,11 @@ namespace IoT.Simulator.Settings
         }
 
         [JsonProperty("deviceId", Required = Required.Always, NullValueHandling = NullValueHandling.Include)]
-        public string DeviceId { get;set; }
+        public string DeviceId { get; set; }
 
         public string HostName
         {
-            get;set;
+            get; set;
         }
     }
 }

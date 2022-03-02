@@ -99,7 +99,7 @@ namespace IoT.Simulator.Services
         public async Task InitiateSimulationAsync()
         {
             string logPrefix = "system".BuildLogPrefix();
-           
+
             try
             {
                 //Connectivity tests

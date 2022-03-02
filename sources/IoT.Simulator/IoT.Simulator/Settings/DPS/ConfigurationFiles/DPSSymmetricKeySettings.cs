@@ -26,7 +26,8 @@ namespace IoT.Simulator.Settings.DPS
         public string GlobalDeviceEndpoint
         {
             get { return _globalDeviceEndpoint; }
-            set {
+            set
+            {
                 if (value != _globalDeviceEndpoint)
                     _globalDeviceEndpoint = value;
             }
