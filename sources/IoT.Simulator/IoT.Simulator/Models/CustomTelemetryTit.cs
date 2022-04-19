@@ -1,10 +1,6 @@
 ﻿using Newtonsoft.Json;
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace IoT.Simulator.Models
 {
@@ -16,20 +12,20 @@ namespace IoT.Simulator.Models
         [JsonProperty("deviceId")]
         public string DeviceId { get; set; }
 
-        [JsonProperty("        moduleId")]
+        [JsonProperty("moduleId")]
         public string ModuleId { get; set; }
 
         [JsonProperty("messageDateTime")]
         public DateTime MessageDateTime { get; set; }
 
-        [JsonProperty("messageType")]        
+        [JsonProperty("messageType")]
         public string MessageType { get; set; }
 
         [JsonProperty("batteryLevels")]
-        public Batterylevel[] BatteryLevels { get; set; }
+        public BatteryData[] BatteryLevels { get; set; }
 
         [JsonProperty("tankLevels")]
-        public Tanklevel[] TankLevels { get; set; }
+        public TankData[] TankLevels { get; set; }
 
         [JsonProperty("position")]
         public Position Position { get; set; }
@@ -41,34 +37,34 @@ namespace IoT.Simulator.Models
     public class Position
     {
         [JsonProperty("latitude")]
-        public string Latitude { get; set; }
+        public decimal Latitude { get; set; }
 
         [JsonProperty("longitude")]
-        public string Longitude { get; set; }
+        public decimal Longitude { get; set; }
 
         [JsonProperty("positionDateTime")]
         public DateTime PositionDateTime { get; set; }
     }
 
-    public class Batterylevel
+    public class BatteryData
     {
         [JsonProperty("batteryId")]
         public string BatteryId { get; set; }
 
         [JsonProperty("batteryLevel")]
-        public string BatteryLevel { get; set; }
+        public decimal BatteryLevel { get; set; }
 
         [JsonProperty("batteryLevelDateTime")]
         public DateTime BatteryLevelDateTime { get; set; }
     }
 
-    public class Tanklevel
+    public class TankData
     {
         [JsonProperty("tankId")]
         public string TankId { get; set; }
-        
+
         [JsonProperty("tankLevel")]
-        public string TankLevel { get; set; }
+        public decimal TankLevel { get; set; }
 
         [JsonProperty("tankLevelDateTime")]
         public DateTime TankLevelDateTime { get; set; }
