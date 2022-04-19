@@ -1,0 +1,37 @@
+{
+  "$schema": "",
+  "deviceId": "",
+  "moduleId": "",
+  "messageDateTime": "",
+  "messageType": "telemetry",
+  "batteryLevels": [
+    {
+      "batteryId": "",
+      "batteryLevel": "",
+      "batteryLevelDateTime": ""
+    },
+    {
+      "batteryId": "",
+      "batteryLevel": "",
+      "batteryLevelDateTime": ""
+    }
+  ],
+  "tankLevels": [
+    {
+      "tankId": "",
+      "tankLevel": "",
+      "tankLevelDateTime": ""
+    },
+    {
+      "tankId": "",
+      "tankLevel": "",
+      "tankLevelDateTime": ""
+    }
+  ],
+  "position": {
+    "latitude": "",
+    "longitude": "",
+    "positionDateTime": ""
+  },
+  "status": "online"
+}

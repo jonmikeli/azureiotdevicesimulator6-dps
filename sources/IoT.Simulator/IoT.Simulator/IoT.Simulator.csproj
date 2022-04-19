@@ -90,6 +90,9 @@ The first version was based on symmetric keys and a new version adds CA X509 key
     <None Update="Messages\error.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Messages\telemetriesBundle.v1.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Messages\measureddata.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -119,6 +122,10 @@ The first version was based on symmetric keys and a new version adds CA X509 key
     </None>
   </ItemGroup>
 
-  <ProjectExtensions><VisualStudio><UserProperties simulationsettings-device_1json__JSONSchema="Settings\JSONSchemas\simulationsettings-device-schema.json" devicesettings_1json__JSONSchema="Settings\JSONSchemas\devicesettings-schema.json" /></VisualStudio></ProjectExtensions>
+  <ItemGroup>
+    <Folder Include="Schemas\" />
+  </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties devicesettings_1json__JSONSchema="Settings\JSONSchemas\devicesettings-schema.json" messages_4telemetriesbundle_1v1_1json__JsonSchema="https://tifms127iotstoragehubdev.blob.core.windows.net/schemas/telemetriesBundle.schema.v1.json" simulationsettings-device_1json__JSONSchema="Settings\JSONSchemas\simulationsettings-device-schema.json" /></VisualStudio></ProjectExtensions>
 
 </Project>

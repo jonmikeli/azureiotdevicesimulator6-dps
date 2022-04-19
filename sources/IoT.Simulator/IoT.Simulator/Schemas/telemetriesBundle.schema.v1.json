@@ -1,0 +1,136 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "/titan/fms/schemas/telemetry/v1",
+    "type": "object",
+    "title": "Titan-FMS-Telemetry bundle",
+    "additionalProperties": false,
+    "description": "",
+    "properties": {
+      "$schema": {
+        "type": "string"
+      },
+      "deviceId": {
+        "type": "string"
+      },
+      "moduleId": {
+        "type": "string"
+      },
+      "messageDateTime": {
+        "type": "string"
+      },
+      "messageType": {
+        "type": "string",
+        "enum": [
+          "telemetry"
+        ]
+      },
+      "batteryLevels": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "batteryId": {
+              "type": "string"
+            },
+            "batteryLevel": {
+              "type": "number"
+            },
+            "batteryLevelDateTime": {
+              "type": "string"
+            }            
+          },
+          "additionalProperties": false,
+          "required": [
+            "batteryId",
+            "batteryLevel",
+            "batteryLevelDateTime"
+          ]
+        }
+      },
+      "tankLevels": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "tankId": {
+              "type": "string"
+            },
+            "tankLevel": {
+              "type": "number"
+            },
+            "tankLevelDateTime": {
+              "type": "string"
+            }            
+          },
+          "additionalProperties": false,
+          "required": [
+            "tankId",
+            "tankLevel",
+            "tankLevelDateTime"           
+          ]
+        }
+      },
+      "position": {
+        "type": "object",
+        "properties": {
+          "latitude": {
+            "type": "number"
+          },
+          "longitude": {
+            "type": "number"
+          },
+          "altitude": {
+            "type": "number"
+          },
+          "speed": {
+            "type": "number"
+          },
+          "heading": {
+            "type": "number"
+          },
+          "positionDateTime": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "latitude",
+          "longitude",
+          "positionDateTime"
+        ]
+      },
+      "status":{
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "online",
+              "offline",
+              "fueling",
+              "charging",
+              "locked"
+            ]
+          },
+          "statusDateTime": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "status",
+          "statusDateTime"        
+        ]
+      }
+    },
+    "required": [
+      "$schema",
+      "deviceId",
+      "messageDateTime",
+      "messageType",
+      "batteryLevels",
+      "tankLevels",
+      "position",
+      "status"
+    ]
+  }

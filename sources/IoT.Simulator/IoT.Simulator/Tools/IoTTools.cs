@@ -82,6 +82,32 @@ namespace IoT.Simulator.Tools
             else return null;
         }
 
+        internal static string RandomizeCustomData(string jsonMessage)
+        {
+            if (string.IsNullOrEmpty(jsonMessage))
+                throw new ArgumentNullException(nameof(jsonMessage));
+
+            JObject jobject = JObject.Parse(jsonMessage);
+
+            if (jobject != null)
+            {
+                JToken jData;
+
+                if (jobject.TryGetValue("data", out jData) && jData.Type == JTokenType.Array)
+                {
+                    Random r = new Random(DateTime.Now.Second);
+                    foreach (var item in (JArray)jData)
+                    {
+                        item["timestamp"] = JValue.FromObject(DateTime.Now.TimeStamp());
+                        item["propertyValue"] = JValue.FromObject(r.Next(150, 300).ToString());
+                    }
+                }
+
+                return JsonConvert.SerializeObject(jobject, Formatting.Indented);
+            }
+            else return null;
+        }
+
         internal static string UpdateIds(string jsonMessage, string deviceId, string moduleId)
         {
             if (string.IsNullOrEmpty(jsonMessage))
