@@ -5,10 +5,7 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0 AS buildwithupdatedca
 #RUN apt update & apt upgrade
 ## REQUIRED TO OVERCOME THE ISSUE INTRODUCED AT 2021/01 DUE TO CA CERTIFICATES
 #https://github.com/NuGet/Announcements/issues/49
-RUN apt-get update \
-&& apt-get remove ca-certificates -y \
-&& apt-get purge ca-certificates -y \
-&& apt-get install -f ca-certificates=20200601~deb10u2 -y
+RUN apt-get update
 ##
 
 FROM buildwithupdatedca AS build
@@ -32,4 +29,4 @@ EXPOSE 8883
 EXPOSE 443
 EXPOSE 5671
 
-LABEL version="v6.0" environment="dev" author="Jon Mikel Inza" copyright="JMI" github="https://github.com/jonmikeli/azureiotdevicesimulator5-dps" name="IoT.Simulator.Dps" description="IoT Simulator docker image. Implements DPS provisioning with symmetric key and CA X509 authentication." tags="IoT;Simulator;DPS;IoTHub;Azure IoT SDK;net6;csharp;Symmetric key;CA X509"
+LABEL version="v6.0" environment="dev" author="Jon Mikel Inza" copyright="JMI" github="https://github.com/jonmikeli/azureiotdevicesimulator6-dps" name="IoT.Simulator.Dps" description="IoT Simulator docker image. Implements DPS provisioning with symmetric key and CA X509 authentication." tags="IoT;Simulator;DPS;IoTHub;Azure IoT SDK;net6;csharp;Symmetric key;CA X509"

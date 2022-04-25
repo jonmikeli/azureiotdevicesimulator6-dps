@@ -34,7 +34,7 @@
     "positionDateTime": "2022-04-17T14:30:00Z"
   },
   "status": {
-    "status": "online",
+    "statusValue": "online",
     "statusDateTime": "2022-04-17T14:30:00Z"
   }
 }

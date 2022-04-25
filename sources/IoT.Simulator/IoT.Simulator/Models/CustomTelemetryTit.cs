@@ -6,7 +6,7 @@ namespace IoT.Simulator.Models
 {
     public class CustomTelemetryTit
     {
-        [JsonProperty("schema")]
+        [JsonProperty("$schema")]
         public string Schema { get; set; }
 
         [JsonProperty("deviceId")]
@@ -31,7 +31,7 @@ namespace IoT.Simulator.Models
         public Position Position { get; set; }
 
         [JsonProperty("status")]
-        public string Status { get; set; }
+        public Status Status { get; set; }
     }
 
     public class Position
@@ -68,6 +68,15 @@ namespace IoT.Simulator.Models
 
         [JsonProperty("tankLevelDateTime")]
         public DateTime TankLevelDateTime { get; set; }
+    }
+
+    public class Status
+    {
+        [JsonProperty("statusValue")]
+        public string StatusValue { get; set; }
+
+        [JsonProperty("statusDateTime")]
+        public DateTime StatusDateTime { get; set; }
     }
 
 }

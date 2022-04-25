@@ -55,7 +55,7 @@ namespace IoT.Simulator
                     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                     .AddJsonFile("devicesettings.json", optional: false, reloadOnChange: true)
                     .AddJsonFile("modulessettings.json", optional: true, reloadOnChange: true)
-                    .AddJsonFile("dpssettings.json", optional: true, reloadOnChange: true)
+                    .AddJsonFile("dpssettings.json", optional: false, reloadOnChange: true)
                     .AddEnvironmentVariables();
 
                 if (string.IsNullOrWhiteSpace(_environmentName))
