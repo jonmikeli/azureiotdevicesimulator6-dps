@@ -1,5 +1,5 @@
 {
-  "$schema": "",
+  "$schema": "https://tifms160iotstoragehubdev.blob.core.windows.net/schemas/telemetriesBundle.schema.v1.json",
   "deviceId": "",
   "moduleId": "",
   "messageDateTime": "2022-04-17T14:30:00Z",
@@ -33,5 +33,8 @@
     "longitude": 0,
     "positionDateTime": "2022-04-17T14:30:00Z"
   },
-  "status": "online"
+  "status": {
+    "status": "online",
+    "statusDateTime": "2022-04-17T14:30:00Z"
+  }
 }
