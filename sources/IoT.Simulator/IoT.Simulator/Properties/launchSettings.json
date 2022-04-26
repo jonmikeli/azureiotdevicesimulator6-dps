@@ -10,6 +10,17 @@
         "PRIMARY_SYMMETRIC_KEY": "LsTpe1VeMJGqTAgZVN4gxUrC8VE7kb5lCR/zgMETYLWnBfwIT7kC7ltEWVjNv/jRU9VTe6lSsISOcg00Lon1oA==",
         "PROVISIONING_REGISTRATION_ID": "device10Sym"
       }
+    },
+    "Docker": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DPS_SECURITY_TYPE": "SymmetricKey",
+        "ENVIRONMENT": "",
+        "TRANSPORT_TYPE": "Mqtt",
+        "DPS_IDSCOPE": "0ne005B88F3",
+        "PRIMARY_SYMMETRIC_KEY": "LsTpe1VeMJGqTAgZVN4gxUrC8VE7kb5lCR/zgMETYLWnBfwIT7kC7ltEWVjNv/jRU9VTe6lSsISOcg00Lon1oA==",
+        "PROVISIONING_REGISTRATION_ID": "device10Sym"
+      }
     }
   }
 }
