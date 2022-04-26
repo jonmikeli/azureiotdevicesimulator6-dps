@@ -12,3 +12,4 @@
 !*.appsettings.*.json
 !*.devicesettings.*.json
 !*.modulessettings.*.json
+!*.launchSettings.json
