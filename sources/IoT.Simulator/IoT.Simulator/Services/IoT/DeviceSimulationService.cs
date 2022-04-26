@@ -245,7 +245,8 @@ namespace IoT.Simulator.Services
                     messageString = await _telemetryMessagingService.GetRandomizedMessageAsync(deviceId, string.Empty);
 
                     var message = new Message(Encoding.UTF8.GetBytes(messageString));
-                    message.Properties.Add("messageType", "data");
+                    message.Properties.Add("messageType", "telemetry");
+                    message.Properties.Add("deviceType", "truck");
 
                     // Add a custom application property to the message.
                     // An IoT hub can filter on these properties without access to the message body.
