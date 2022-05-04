@@ -5,9 +5,9 @@
   "messageDateTime": "2022-04-17T14:30:00Z",
   "messageType": "fuelingSimple",
   "value": {
-    "startDateTime": "2022-05-04T12:00:00T",
+    "startDateTime": "2022-05-04T12:00:00Z",
     "duration": 15654651,
-    "dataDateTime": "2022-05-04T12:00:00T",
+    "dataDateTime": "2022-05-04T12:00:00Z",
     "position": {
       "latitude": 0,
       "longitude": 0,

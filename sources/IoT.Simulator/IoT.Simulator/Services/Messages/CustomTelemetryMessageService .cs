@@ -1,7 +1,10 @@
 ﻿using IoT.Simulator.Extensions;
+using IoT.Simulator.Models;
 using IoT.Simulator.Tools;
 
 using Microsoft.Extensions.Logging;
+
+using Newtonsoft.Json;
 
 using System;
 using System.IO;
@@ -59,10 +62,67 @@ namespace IoT.Simulator.Services
             string logPrefix = "CustomTelemetryMessageService".BuildLogPrefix();
 
             //Randomize data           
-            messageString = IoTTools.RandomizeCustomData(messageString);
+            messageString = RandomizeCustomData(messageString);
             _logger.LogTrace($"{logPrefix}::{artifactId}::Randomized data to update template's values before sending the message.");
 
             return messageString;
+        }
+
+        internal string RandomizeCustomData(string jsonMessage)
+        {
+            if (string.IsNullOrEmpty(jsonMessage))
+                throw new ArgumentNullException(nameof(jsonMessage));
+
+            CustomTelemetryTit data = JsonConvert.DeserializeObject<CustomTelemetryTit>(jsonMessage);
+
+            if (data != null)
+            {
+                Random r = new Random(DateTime.Now.Second);
+                DateTime messageConstructionDate = DateTime.UtcNow;
+
+                if (data.Position != null)
+                {
+                    data.Position.Latitude = data.Position.Latitude + (decimal)r.Next(5, 20) / 10;
+                    data.Position.Longitude = data.Position.Longitude + (decimal)r.Next(5, 20) / 10;
+                    data.Position.PositionDateTime = messageConstructionDate;
+                }
+
+                data.MessageDateTime = messageConstructionDate;
+                data.BatteryLevels = new BatteryData[]
+                {
+                    new BatteryData()
+                    {
+                        BatteryId = "B1",
+                        BatteryLevel = (decimal)r.Next(100, 10000)/(decimal)100,
+                        BatteryLevelDateTime = messageConstructionDate
+                    },
+                    new BatteryData()
+                    {
+                        BatteryId = "B2",
+                        BatteryLevel = (decimal)r.Next(100, 10000)/(decimal)100,
+                        BatteryLevelDateTime = messageConstructionDate
+                    }
+                };
+
+                data.TankLevels = new TankData[]
+                {
+                    new TankData()
+                    {
+                        TankId = "T1",
+                        TankLevel = (decimal)r.Next(100, 10000)/(decimal)100,
+                        TankLevelDateTime = messageConstructionDate
+                    },
+                    new TankData()
+                    {
+                        TankId = "T2",
+                        TankLevel = (decimal)r.Next(100, 10000)/(decimal)100,
+                        TankLevelDateTime = messageConstructionDate
+                    }
+                };
+
+                return JsonConvert.SerializeObject(data, Formatting.Indented);
+            }
+            else return null;
         }
     }
 }

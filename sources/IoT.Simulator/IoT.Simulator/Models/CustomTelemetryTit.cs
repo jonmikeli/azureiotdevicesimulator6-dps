@@ -34,6 +34,59 @@ namespace IoT.Simulator.Models
         public Status Status { get; set; }
     }
 
+    public class CustomFuelingTelemetryTit
+    {
+        [JsonProperty("$schema")]
+        public string Schema { get; set; }
+
+        [JsonProperty("deviceId")]
+        public string DeviceId { get; set; }
+
+        [JsonProperty("moduleId")]
+        public string ModuleId { get; set; }
+
+        [JsonProperty("messageDateTime")]
+        public DateTime MessageDateTime { get; set; }
+
+        [JsonProperty("messageType")]
+        public string MessageType { get; set; }
+
+        [JsonProperty("value")]
+        public FuelingSession Value { get; set; }        
+    }
+
+    public class FuelingSession
+    {
+        [JsonProperty("startDateTime")]
+        public DateTime StartDateTime { get; set; }
+        [JsonProperty("duration")]
+        public int Duration { get; set; }
+        [JsonProperty("dataDateTime")]
+        public DateTime DataDateTime { get; set; }
+        [JsonProperty("position")]
+        public Position Position { get; set; }
+        [JsonProperty("pressure")]
+        public decimal Pressure { get; set; }
+        [JsonProperty("netVolumeDelivered")]
+        public decimal NetVolumeDelivered { get; set; }
+        [JsonProperty("averageFlowRate")]
+        public decimal AverageFlowRate { get; set; }
+        [JsonProperty("regularPressure")]
+        public decimal RegularPressure { get; set; }
+        [JsonProperty("interlockOverride")]
+        public bool InterlockOverride { get; set; }
+        [JsonProperty("batteryLevelsAtTheBeginning")]
+        public BatteryData[] BatteryLevelsAtStart { get; set; }
+        [JsonProperty("batteryLevelsAtTheEnd")]
+        public BatteryData[] BatteryLevelsAtEnd { get; set; }
+        [JsonProperty("tankLevelsAtTheBeginning")]
+        public TankData[] TankLevelsAtStart { get; set; }
+        [JsonProperty("tankLevelsAtTheEnd")]
+        public TankData[] TankLevelsAtEnd { get; set; }        
+    }
+
+    
+
     public class Position
     {
         [JsonProperty("latitude")]
