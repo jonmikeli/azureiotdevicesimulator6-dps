@@ -1,5 +1,5 @@
 {
-  "$schema":  "",
+  "$schema": "https://tifms160iotsthubdev.blob.core.windows.net/schemas/commissioning.schema.v1.json",
   "deviceId": "",
   "messageType": "commissioning",
   "messageDateTime": "2022-05-04T12:00:00Z",
