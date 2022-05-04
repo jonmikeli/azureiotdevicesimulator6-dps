@@ -8,6 +8,8 @@
     "enableModules": false,
     "enableTelemetryMessages": true,
     "telemetryFrecuency": 10,
+    "enableFuelingMessages": true,
+    "fuelingFrecuency": 30,
     "enableErrorMessages": false,
     "errorFrecuency": 20,
     "enableCommissioningMessages": false,

@@ -14,6 +14,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,9 +32,10 @@ namespace IoT.Simulator.Services
         private string _deviceId = string.Empty;
         private string _iotHub;
         private int _telemetryInterval;
+        private int _fuelingTelemetryInterval;
         private bool _stopProcessing = false;
 
-        private ITelemetryMessageService _telemetryMessagingService;
+        private IEnumerable<ITelemetryMessageService> _telemetryMessagingServices;
         private IErrorMessageService _errorMessagingService;
         private ICommissioningMessageService _commissioningMessagingService;
         private IProvisioningService _provisioningService;
@@ -42,7 +44,7 @@ namespace IoT.Simulator.Services
         public DeviceSimulationService(
             IOptionsMonitor<DeviceSettings> deviceSettingsDelegate,
             IOptions<DPSSettings> dpsSettings,
-            ITelemetryMessageService telemetryMessagingService,
+            IEnumerable<ITelemetryMessageService> telemetryMessagingServices,
             IErrorMessageService errorMessagingService,
             ICommissioningMessageService commissioningMessagingService,
             IProvisioningService provisioningService,
@@ -63,8 +65,8 @@ namespace IoT.Simulator.Services
             if (dpsSettings.Value == null)
                 throw new ArgumentNullException("dpsSettings.Value");
 
-            if (telemetryMessagingService == null)
-                throw new ArgumentNullException(nameof(telemetryMessagingService));
+            if (telemetryMessagingServices == null)
+                throw new ArgumentNullException(nameof(telemetryMessagingServices));
 
             if (errorMessagingService == null)
                 throw new ArgumentNullException(nameof(errorMessagingService));
@@ -86,10 +88,11 @@ namespace IoT.Simulator.Services
             _iotHub = _deviceSettingsDelegate.CurrentValue.HostName;
 
             _telemetryInterval = _simulationSettings.TelemetryFrecuency;
+            _fuelingTelemetryInterval = _simulationSettings.FuelingFrecuency;
 
             _logger = loggerFactory.CreateLogger<DeviceSimulationService>();
 
-            _telemetryMessagingService = telemetryMessagingService;
+            _telemetryMessagingServices = telemetryMessagingServices;
             _errorMessagingService = errorMessagingService;
             _commissioningMessagingService = commissioningMessagingService;
             _provisioningService = provisioningService;
@@ -184,7 +187,10 @@ namespace IoT.Simulator.Services
                         SendDeviceToCloudLatencyTestAsync(_deviceSettingsDelegate.CurrentValue.DeviceId, _simulationSettings.LatencyTestsFrecuency);
 
                     if (_simulationSettings.EnableTelemetryMessages)
-                        SendDeviceToCloudMessagesAsync(_deviceSettingsDelegate.CurrentValue.DeviceId); //interval is a global variable changed by processes
+                        SendDeviceToCloudMessagesTelemetryAsync(_deviceSettingsDelegate.CurrentValue.DeviceId); //interval is a global variable changed by processes
+
+                    if (_simulationSettings.EnableFuelingMessages)
+                        SendDeviceToCloudMessagesFuelingAsync(_deviceSettingsDelegate.CurrentValue.DeviceId); //interval is a global variable changed by processes
 
                     if (_simulationSettings.EnableErrorMessages)
                         SendDeviceToCloudErrorAsync(_deviceSettingsDelegate.CurrentValue.DeviceId, _simulationSettings.ErrorFrecuency);
@@ -230,19 +236,24 @@ namespace IoT.Simulator.Services
         #region D2C                
 
         // Async method to send simulated telemetry
-        internal async Task SendDeviceToCloudMessagesAsync(string deviceId)
+        internal async Task SendDeviceToCloudMessagesTelemetryAsync(string deviceId)
         {
             int counter = 0;
-            string logPrefix = "data".BuildLogPrefix();
+            string logPrefix = "SendDeviceToCloudMessagesTelemetryAsync".BuildLogPrefix();
 
             string messageString = string.Empty;
+
+            var telemetryMessagingService = _telemetryMessagingServices.SingleOrDefault(t => t.GetType() == typeof(CustomTelemetryMessageService));
+
+            if (telemetryMessagingService == null)
+                throw new Exception($"No telemetry messaging service has been found.");
 
             using (_logger.BeginScope($"{logPrefix}::{DateTime.Now}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::MEASURED DATA"))
             {
                 while (true)
                 {
                     //Randomize data
-                    messageString = await _telemetryMessagingService.GetRandomizedMessageAsync(deviceId, string.Empty);
+                    messageString = await telemetryMessagingService.GetRandomizedMessageAsync(deviceId, string.Empty);
 
                     var message = new Message(Encoding.UTF8.GetBytes(messageString));
                     message.Properties.Add("messageType", "telemetry");
@@ -268,6 +279,52 @@ namespace IoT.Simulator.Services
                     }
 
                     await Task.Delay(_telemetryInterval * 1000);
+                }
+            }
+        }
+
+        internal async Task SendDeviceToCloudMessagesFuelingAsync(string deviceId)
+        {
+            int counter = 0;
+            string logPrefix = "SendDeviceToCloudMessagesFuelingAsync".BuildLogPrefix();
+
+            string messageString = string.Empty;
+
+            var fuelingMessagingService = _telemetryMessagingServices.SingleOrDefault(t => t.GetType() == typeof(CustomFuelingTelemetryMessageService));
+            if (fuelingMessagingService == null)
+                throw new Exception($"No fueling telemetry messaging service has been found.");
+
+            using (_logger.BeginScope($"{logPrefix}::{DateTime.Now}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::MEASURED DATA"))
+            {
+                while (true)
+                {
+                    //Randomize data
+                    messageString = await fuelingMessagingService.GetRandomizedMessageAsync(deviceId, string.Empty);
+
+                    var message = new Message(Encoding.UTF8.GetBytes(messageString));
+                    message.Properties.Add("messageType", "fuelingsimple");
+                    message.Properties.Add("deviceType", "truck");
+
+                    // Add a custom application property to the message.
+                    // An IoT hub can filter on these properties without access to the message body.
+                    //message.Properties.Add("temperatureAlert", (currentTemperature > 30) ? "true" : "false");
+                    message.ContentType = "application/json";
+                    message.ContentEncoding = "utf-8";
+
+                    // Send the tlemetry message
+                    await _deviceClient.SendEventAsync(message);
+                    counter++;
+
+                    _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::Sent message: {messageString}.");
+                    _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::COUNTER: {counter}.");
+
+                    if (_stopProcessing)
+                    {
+                        _logger.LogDebug($"{logPrefix}::STOP PROCESSING.");
+                        break;
+                    }
+
+                    await Task.Delay(_fuelingTelemetryInterval * 1000);
                 }
             }
         }
@@ -456,6 +513,9 @@ namespace IoT.Simulator.Services
                 await _deviceClient.SetMethodHandlerAsync("SetTelemetryInterval", SetTelemetryInterval, null);
                 _logger.LogTrace($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::DIRECT METHOD SetTelemetryInterval registered.");
 
+                await _deviceClient.SetMethodHandlerAsync("SetFuelingTelemetryInterval", SetFuelingTelemetryInterval, null);
+                _logger.LogTrace($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::DIRECT METHOD SetFuelingTelemetryInterval registered.");
+
                 await _deviceClient.SetMethodHandlerAsync("LatencyTestCallback", LatencyTestCallback, null);
                 _logger.LogTrace($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::DIRECT METHOD LatencyTestCallback registered.");
 
@@ -498,6 +558,29 @@ namespace IoT.Simulator.Services
             if (Int32.TryParse(data, out _telemetryInterval))
             {
                 _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::Telemetry interval set to {_telemetryInterval} seconds.");
+
+                // Acknowlege the direct method call with a 200 success message
+                string result = "{\"result\":\"Executed direct method: " + methodRequest.Name + "\"}";
+                return Task.FromResult(new MethodResponse(Encoding.UTF8.GetBytes(result), 200));
+            }
+            else
+            {
+                // Acknowlege the direct method call with a 400 error message
+                string result = "{\"result\":\"Invalid parameter\"}";
+                return Task.FromResult(new MethodResponse(Encoding.UTF8.GetBytes(result), 200));
+            }
+        }
+
+        private Task<MethodResponse> SetFuelingTelemetryInterval(MethodRequest methodRequest, object userContext)
+        {
+            string logPrefix = "c2ddirectmethods".BuildLogPrefix();
+
+            var data = Encoding.UTF8.GetString(methodRequest.Data);
+
+            // Check the payload is a single integer value
+            if (Int32.TryParse(data, out _fuelingTelemetryInterval))
+            {
+                _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::Fueling telemetry interval set to {_fuelingTelemetryInterval} seconds.");
 
                 // Acknowlege the direct method call with a 200 success message
                 string result = "{\"result\":\"Executed direct method: " + methodRequest.Name + "\"}";

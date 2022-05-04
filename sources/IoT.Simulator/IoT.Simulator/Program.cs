@@ -539,6 +539,7 @@ namespace IoT.Simulator
                 throw new ArgumentNullException(nameof(services));
 
             services.AddTransient<ITelemetryMessageService, CustomTelemetryMessageService>();
+            services.AddTransient<ITelemetryMessageService, CustomFuelingTelemetryMessageService>();
             services.AddTransient<IErrorMessageService, SimpleErrorMessageService>();
             services.AddTransient<ICommissioningMessageService, SimpleCommissioningMessageService>();
         }
