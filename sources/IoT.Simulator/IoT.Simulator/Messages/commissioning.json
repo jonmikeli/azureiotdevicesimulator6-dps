@@ -1,8 +1,9 @@
 {
+  "$schema":  "",
   "deviceId": "",
   "messageType": "commissioning",
-  "timestamp": 13456,
-  "userId": "",
+  "messageDateTime": "2022-05-04T12:00:00Z",
+  "resourceId": "10",
   "building": {
     "buildingId": "",
     "floor": "",
