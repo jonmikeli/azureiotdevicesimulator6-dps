@@ -1,5 +1,5 @@
 {
-  "$schema": "https://tifms160iotsthubdev.blob.core.windows.net/schemas/telemetriesBundle.schema.v1.json",
+  "$schema": "https://tifms160iotsthubdev.blob.core.windows.net/schemas/fueling.simple.schema.v1.json",
   "deviceId": "",
   "moduleId": "",
   "messageDateTime": "2022-04-17T14:30:00Z",
