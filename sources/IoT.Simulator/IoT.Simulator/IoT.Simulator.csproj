@@ -90,6 +90,9 @@ The first version was based on symmetric keys and a new version adds CA X509 key
     <None Update="Messages\error.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Messages\fueling.v1.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Messages\telemetriesBundle.v1.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
