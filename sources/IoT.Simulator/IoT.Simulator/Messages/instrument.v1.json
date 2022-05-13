@@ -1,0 +1,16 @@
+{
+  "$schema": "https://sttronicotamedatapoc.blob.core.windows.net/schemas/instrument.schema.v1.json",
+
+  "logicalCorrelationId": "simulator-integration-test",
+  "instrumentId": 0,
+  "tronicoId": "XX/YYYY",
+  "designation": "d",
+  "reference": "r",
+  "serialNumber": "n",
+  "calibrationDate": "2022-04-25",
+  "calibrationDueDate": "2022-04-25",
+  "status": "OK",
+
+  "messageType": "instrument",
+  "category": "benchTest"
+}

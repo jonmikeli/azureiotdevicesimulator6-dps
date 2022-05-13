@@ -1,0 +1,19 @@
+{
+  "$schema": "https://sttronicotamedatapoc.blob.core.windows.net/schemas/testResult.schema.v1.json",
+
+  "logicalCorrelationId": "simulator-integration-test",
+  "testStartDateTime": "2022-04-25T15:30:23Z",
+  "testEndDateTime": "2022-04-25T15:30:23Z",
+  "stepName": "s",
+  "testId": "i",
+  "testName": "t",
+  "unit": "u",
+  "minTol": "min",
+  "maxTol": "max",
+  "result": "r",
+  "sanction": "PASS",
+  "isDisplayed": true,
+
+  "messageType": "testResult",
+  "category": "benchTest"
+}

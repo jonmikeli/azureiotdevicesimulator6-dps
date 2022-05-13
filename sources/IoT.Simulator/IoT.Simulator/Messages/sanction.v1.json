@@ -1,0 +1,11 @@
+{
+  "$schema": "https://sttronicotamedatapoc.blob.core.windows.net/schemas/sanction.schema.v1.json",
+
+  "logicalCorrelationId": "simulator-integration-test",
+  "globalSanction": "PASS",
+  "testEndDateTime": "2022-04-25T15:30:23Z",
+  "comment": "c",
+
+  "messageType": "sanction",
+  "category": "benchTest"
+}

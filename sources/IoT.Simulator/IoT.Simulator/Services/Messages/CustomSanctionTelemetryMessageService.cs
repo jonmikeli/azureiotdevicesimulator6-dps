@@ -82,6 +82,7 @@ namespace IoT.Simulator.Services
                 Random r = new Random(DateTime.Now.Second);
                 DateTime messageConstructionDate = DateTime.UtcNow;
 
+                data["logicalCorrelationId"] = $"simulator-integration-test-{messageConstructionDate.ToString("yyyyMMdd-HH")}";
                 data["testEndDateTime"] = messageConstructionDate.ToString("yyyy-MM-ddTHH:mm:ssZ");
                 data["globalSanction"] = r.Next(0, 10) > 5 ? "PASS" : "FAIL";
 

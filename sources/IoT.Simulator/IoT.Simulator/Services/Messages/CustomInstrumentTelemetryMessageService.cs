@@ -75,7 +75,19 @@ namespace IoT.Simulator.Services
             if (string.IsNullOrEmpty(jsonMessage))
                 throw new ArgumentNullException(nameof(jsonMessage));
 
-            return jsonMessage;
+            var data = JsonConvert.DeserializeObject<JObject>(jsonMessage);
+
+            if (data != null)
+            {
+                Random r = new Random(DateTime.Now.Second);
+                DateTime messageConstructionDate = DateTime.UtcNow;
+
+                data["logicalCorrelationId"] = $"simulator-integration-test-{messageConstructionDate.ToString("yyyyMMdd-HH")}";
+                data["status"] = r.Next(0, 10) > 2 ? "OK" : "NOK";
+
+                return JsonConvert.SerializeObject(data, Formatting.Indented);
+            }
+            else return null;
         }
     }
 }

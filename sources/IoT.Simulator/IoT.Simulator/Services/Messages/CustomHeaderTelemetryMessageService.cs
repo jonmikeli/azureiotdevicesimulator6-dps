@@ -80,6 +80,7 @@ namespace IoT.Simulator.Services
                 Random r = new Random(DateTime.Now.Second);
                 DateTime messageConstructionDate = DateTime.UtcNow;
 
+                data["logicalCorrelationId"] = $"simulator-integration-test-{messageConstructionDate.ToString("yyyyMMdd-HH")}";
                 data["startDateTimeTest"] = messageConstructionDate.ToString("yyyy-MM-ddTHH:mm:ssZ");
 
                 return JsonConvert.SerializeObject(data, Formatting.Indented);
