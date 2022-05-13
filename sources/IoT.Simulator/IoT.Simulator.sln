@@ -39,6 +39,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3.Repositories", "3.Reposit
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DeviceManagement", "DeviceManagement", "{41B2B099-E84E-4A2C-8724-1FCA8FD18AF9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSON.Dynamic.Tools", "JSON.Dynamic.Tools\JSON.Dynamic.Tools.csproj", "{D9C13A26-C3E4-47F5-87CE-6398E7090C7F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -127,6 +129,14 @@ Global
 		{493EB0B1-D55C-439B-BBC5-B047EB49CBE4}.Production|Any CPU.Build.0 = Debug|Any CPU
 		{493EB0B1-D55C-439B-BBC5-B047EB49CBE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{493EB0B1-D55C-439B-BBC5-B047EB49CBE4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9C13A26-C3E4-47F5-87CE-6398E7090C7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9C13A26-C3E4-47F5-87CE-6398E7090C7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9C13A26-C3E4-47F5-87CE-6398E7090C7F}.Development|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9C13A26-C3E4-47F5-87CE-6398E7090C7F}.Development|Any CPU.Build.0 = Debug|Any CPU
+		{D9C13A26-C3E4-47F5-87CE-6398E7090C7F}.Production|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9C13A26-C3E4-47F5-87CE-6398E7090C7F}.Production|Any CPU.Build.0 = Debug|Any CPU
+		{D9C13A26-C3E4-47F5-87CE-6398E7090C7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9C13A26-C3E4-47F5-87CE-6398E7090C7F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -19,6 +19,7 @@ The first version was based on symmetric keys and a new version adds CA X509 key
     <PackageId>IoT.Simulator.DPS</PackageId>
     <SignAssembly>false</SignAssembly>
     <AssemblyName>IoT.Simulator</AssemblyName>
+    <UserSecretsId>77794041-2404-4773-86fd-8f9096b8dc32</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -41,6 +42,7 @@ The first version was based on symmetric keys and a new version adds CA X509 key
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="6.0.0" />
@@ -90,10 +92,10 @@ The first version was based on symmetric keys and a new version adds CA X509 key
     <None Update="Messages\error.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Messages\fueling.v1.json">
+    <None Update="Messages\status.v1.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Messages\telemetriesBundle.v1.json">
+    <None Update="Messages\header.v1.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Messages\measureddata.json">

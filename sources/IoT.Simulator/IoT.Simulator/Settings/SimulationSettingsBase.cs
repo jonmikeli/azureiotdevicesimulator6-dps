@@ -9,10 +9,10 @@ namespace IoT.Simulator.Settings
         [JsonProperty("telemetryFrecuency")]
         public int TelemetryFrecuency { get; set; }
 
-        [JsonProperty("enableFuelingMessages")]
-        public bool EnableFuelingMessages { get; set; }
-        [JsonProperty("fuelingFrecuency")]
-        public int FuelingFrecuency { get; set; }
+        [JsonProperty("enableStatusMessages")]
+        public bool EnableStatusMessages { get; set; }
+        [JsonProperty("statusFrecuency")]
+        public int StatusFrecuency { get; set; }
 
         [JsonProperty("enableErrorMessages")]
         public bool EnableErrorMessages { get; set; }

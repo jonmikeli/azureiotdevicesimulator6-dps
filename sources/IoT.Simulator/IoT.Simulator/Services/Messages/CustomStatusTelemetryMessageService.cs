@@ -13,17 +13,17 @@ using System.Threading.Tasks;
 namespace IoT.Simulator.Services
 {
     //https://dejanstojanovic.net/aspnet/2018/december/registering-multiple-implementations-of-the-same-interface-in-aspnet-core/
-    public class CustomTelemetryMessageService : ITelemetryMessageService
+    public class CustomStatusTelemetryMessageService : ITelemetryMessageService
     {
         private ILogger _logger;
-        private string fileTemplatePath = @"./Messages/telemetriesBundle.v1.json";
+        private string fileTemplatePath = @"./Messages/status.v1.json";
 
-        public CustomTelemetryMessageService(ILoggerFactory loggerFactory)
+        public CustomStatusTelemetryMessageService(ILoggerFactory loggerFactory)
         {
             if (loggerFactory == null)
                 throw new ArgumentNullException(nameof(loggerFactory));
 
-            _logger = loggerFactory.CreateLogger<CustomTelemetryMessageService>();
+            _logger = loggerFactory.CreateLogger<CustomStatusTelemetryMessageService>();
         }
 
         public async Task<string> GetMessageAsync()
@@ -40,13 +40,13 @@ namespace IoT.Simulator.Services
         {
             string artifactId = string.IsNullOrEmpty(moduleId) ? deviceId : moduleId;
 
-            string logPrefix = "CustomTelemetryMessageService".BuildLogPrefix();
+            string logPrefix = "CustomFuelingTelemetryMessageService".BuildLogPrefix();
             string messageString = await GetMessageAsync();
 
             if (string.IsNullOrEmpty(messageString))
                 throw new ArgumentNullException(nameof(messageString), "DATA: The message to send is empty or not found.");
 
-            _logger.LogTrace($"{logPrefix}::{artifactId}::telemetriesBundle.v1.json file loaded.");
+            _logger.LogTrace($"{logPrefix}::{artifactId}::fueling.v1.json file loaded.");
 
             messageString = IoTTools.UpdateIds(messageString, deviceId, moduleId);
             _logger.LogTrace($"{logPrefix}::{artifactId}::DeviceId and moduleId updated in the message template.");
@@ -59,7 +59,7 @@ namespace IoT.Simulator.Services
             string artifactId = string.IsNullOrEmpty(moduleId) ? deviceId : moduleId;
 
             string messageString = await this.GetMessageAsync(deviceId, moduleId);
-            string logPrefix = "CustomTelemetryMessageService".BuildLogPrefix();
+            string logPrefix = "CustomStatusTelemetryMessageService".BuildLogPrefix();
 
             //Randomize data           
             messageString = RandomizeCustomData(messageString);
@@ -73,52 +73,17 @@ namespace IoT.Simulator.Services
             if (string.IsNullOrEmpty(jsonMessage))
                 throw new ArgumentNullException(nameof(jsonMessage));
 
-            CustomTelemetryTit data = JsonConvert.DeserializeObject<CustomTelemetryTit>(jsonMessage);
+            CustomStatusTelemetryTro data = JsonConvert.DeserializeObject<CustomStatusTelemetryTro>(jsonMessage);
 
             if (data != null)
             {
                 Random r = new Random(DateTime.Now.Second);
                 DateTime messageConstructionDate = DateTime.UtcNow;
 
-                if (data.Position != null)
-                {
-                    data.Position.Latitude = data.Position.Latitude + (decimal)r.Next(5, 20) / 10;
-                    data.Position.Longitude = data.Position.Longitude + (decimal)r.Next(5, 20) / 10;
-                    data.Position.PositionDateTime = messageConstructionDate;
-                }
 
-                data.MessageDateTime = messageConstructionDate;
-                data.BatteryLevels = new BatteryData[]
-                {
-                    new BatteryData()
-                    {
-                        BatteryId = "B1",
-                        BatteryLevel = (decimal)r.Next(100, 10000)/(decimal)100,
-                        BatteryLevelDateTime = messageConstructionDate
-                    },
-                    new BatteryData()
-                    {
-                        BatteryId = "B2",
-                        BatteryLevel = (decimal)r.Next(100, 10000)/(decimal)100,
-                        BatteryLevelDateTime = messageConstructionDate
-                    }
-                };
-
-                data.TankLevels = new TankData[]
-                {
-                    new TankData()
-                    {
-                        TankId = "T1",
-                        TankLevel = (decimal)r.Next(100, 10000)/(decimal)100,
-                        TankLevelDateTime = messageConstructionDate
-                    },
-                    new TankData()
-                    {
-                        TankId = "T2",
-                        TankLevel = (decimal)r.Next(100, 10000)/(decimal)100,
-                        TankLevelDateTime = messageConstructionDate
-                    }
-                };
+                data.StatusDateTime = messageConstructionDate;
+                data.oldStatus = "started";
+                data.NewStatus = "idle";
 
                 return JsonConvert.SerializeObject(data, Formatting.Indented);
             }

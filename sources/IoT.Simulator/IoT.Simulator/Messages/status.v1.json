@@ -1,0 +1,11 @@
+{
+  "$schema": "https://sttronicotamedatapoc.blob.core.windows.net/schemas/status.schema.v1.json",
+  "deviceId": "",
+  "benchSerialNumber": "60002DF555_T01",
+  "statusDateTime": "2022-04-25T15:30:23Z",
+  "oldStatus": "started",
+  "newStatus": "idle",
+
+  "messageType": "status", // Type du message
+  "category": "benchTest"
+}

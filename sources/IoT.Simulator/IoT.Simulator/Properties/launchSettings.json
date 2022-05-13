@@ -17,9 +17,9 @@
         "DPS_SECURITY_TYPE": "SymmetricKey",
         "ENVIRONMENT": "",
         "TRANSPORT_TYPE": "Mqtt",
-        "DPS_IDSCOPE": "0ne005B88F3",
-        "PRIMARY_SYMMETRIC_KEY": "LsTpe1VeMJGqTAgZVN4gxUrC8VE7kb5lCR/zgMETYLWnBfwIT7kC7ltEWVjNv/jRU9VTe6lSsISOcg00Lon1oA==",
-        "PROVISIONING_REGISTRATION_ID": "device10Sym"
+        "DPS_IDSCOPE": "0ne005DD485",
+        "PRIMARY_SYMMETRIC_KEY": "NtuhpHLF0F6iQDk54l+OgrdSxl77NZKt652ngzBVd7yR9/LKshyYz9GIzZUdNK49busy87/14AEPRomytE4z8w==",        
+        "PROVISIONING_REGISTRATION_ID": "benchSimulated01"
       }
     }
   }

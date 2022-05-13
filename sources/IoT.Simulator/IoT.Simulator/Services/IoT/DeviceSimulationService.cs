@@ -88,7 +88,7 @@ namespace IoT.Simulator.Services
             _iotHub = _deviceSettingsDelegate.CurrentValue.HostName;
 
             _telemetryInterval = _simulationSettings.TelemetryFrecuency;
-            _fuelingTelemetryInterval = _simulationSettings.FuelingFrecuency;
+            _fuelingTelemetryInterval = _simulationSettings.StatusFrecuency;
 
             _logger = loggerFactory.CreateLogger<DeviceSimulationService>();
 
@@ -189,8 +189,8 @@ namespace IoT.Simulator.Services
                     if (_simulationSettings.EnableTelemetryMessages)
                         SendDeviceToCloudMessagesTelemetryAsync(_deviceSettingsDelegate.CurrentValue.DeviceId); //interval is a global variable changed by processes
 
-                    if (_simulationSettings.EnableFuelingMessages)
-                        SendDeviceToCloudMessagesFuelingAsync(_deviceSettingsDelegate.CurrentValue.DeviceId); //interval is a global variable changed by processes
+                    if (_simulationSettings.EnableStatusMessages)
+                        SendDeviceToCloudMessagesStatusAsync(_deviceSettingsDelegate.CurrentValue.DeviceId); //interval is a global variable changed by processes
 
                     if (_simulationSettings.EnableErrorMessages)
                         SendDeviceToCloudErrorAsync(_deviceSettingsDelegate.CurrentValue.DeviceId, _simulationSettings.ErrorFrecuency);
@@ -283,14 +283,14 @@ namespace IoT.Simulator.Services
             }
         }
 
-        internal async Task SendDeviceToCloudMessagesFuelingAsync(string deviceId)
+        internal async Task SendDeviceToCloudMessagesStatusAsync(string deviceId)
         {
             int counter = 0;
             string logPrefix = "SendDeviceToCloudMessagesFuelingAsync".BuildLogPrefix();
 
             string messageString = string.Empty;
 
-            var fuelingMessagingService = _telemetryMessagingServices.SingleOrDefault(t => t.GetType() == typeof(CustomFuelingTelemetryMessageService));
+            var fuelingMessagingService = _telemetryMessagingServices.SingleOrDefault(t => t.GetType() == typeof(CustomStatusTelemetryMessageService));
             if (fuelingMessagingService == null)
                 throw new Exception($"No fueling telemetry messaging service has been found.");
 
@@ -302,8 +302,7 @@ namespace IoT.Simulator.Services
                     messageString = await fuelingMessagingService.GetRandomizedMessageAsync(deviceId, string.Empty);
 
                     var message = new Message(Encoding.UTF8.GetBytes(messageString));
-                    message.Properties.Add("messageType", "fuelingsimple");
-                    message.Properties.Add("deviceType", "truck");
+                    message.Properties.Add("messageType", "status");
 
                     // Add a custom application property to the message.
                     // An IoT hub can filter on these properties without access to the message body.

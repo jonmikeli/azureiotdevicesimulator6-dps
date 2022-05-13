@@ -89,59 +89,60 @@ namespace IoT.Simulator.Tools
 
         internal static string RandomizeCustomData(string jsonMessage)
         {
-            if (string.IsNullOrEmpty(jsonMessage))
-                throw new ArgumentNullException(nameof(jsonMessage));
+            return null;
+            //if (string.IsNullOrEmpty(jsonMessage))
+            //    throw new ArgumentNullException(nameof(jsonMessage));
 
-            CustomTelemetryTit data = JsonConvert.DeserializeObject<CustomTelemetryTit>(jsonMessage);
+            //CustomTelemetryTit data = JsonConvert.DeserializeObject<CustomTelemetryTit>(jsonMessage);
 
-            if (data != null)
-            {
-                Random r = new Random(DateTime.Now.Second);
-                DateTime messageConstructionDate = DateTime.UtcNow;
+            //if (data != null)
+            //{
+            //    Random r = new Random(DateTime.Now.Second);
+            //    DateTime messageConstructionDate = DateTime.UtcNow;
 
-                if (data.Position != null)
-                {
-                    data.Position.Latitude = data.Position.Latitude + (decimal)r.Next(5, 20) / 10;
-                    data.Position.Longitude = data.Position.Longitude + (decimal)r.Next(5, 20) / 10;
-                    data.Position.PositionDateTime = messageConstructionDate;
-                }
+            //    if (data.Position != null)
+            //    {
+            //        data.Position.Latitude = data.Position.Latitude + (decimal)r.Next(5, 20) / 10;
+            //        data.Position.Longitude = data.Position.Longitude + (decimal)r.Next(5, 20) / 10;
+            //        data.Position.PositionDateTime = messageConstructionDate;
+            //    }
 
-                data.MessageDateTime = messageConstructionDate;
-                data.BatteryLevels = new BatteryData[]
-                {
-                    new BatteryData()
-                    {
-                        BatteryId = "B1",
-                        BatteryLevel = (decimal)r.Next(100, 10000)/(decimal)100,
-                        BatteryLevelDateTime = messageConstructionDate
-                    },
-                    new BatteryData()
-                    {
-                        BatteryId = "B2",
-                        BatteryLevel = (decimal)r.Next(100, 10000)/(decimal)100,
-                        BatteryLevelDateTime = messageConstructionDate
-                    }
-                };
+            //    data.MessageDateTime = messageConstructionDate;
+            //    data.BatteryLevels = new BatteryData[]
+            //    {
+            //        new BatteryData()
+            //        {
+            //            BatteryId = "B1",
+            //            BatteryLevel = (decimal)r.Next(100, 10000)/(decimal)100,
+            //            BatteryLevelDateTime = messageConstructionDate
+            //        },
+            //        new BatteryData()
+            //        {
+            //            BatteryId = "B2",
+            //            BatteryLevel = (decimal)r.Next(100, 10000)/(decimal)100,
+            //            BatteryLevelDateTime = messageConstructionDate
+            //        }
+            //    };
 
-                data.TankLevels = new TankData[]
-                {
-                    new TankData()
-                    {
-                        TankId = "T1",
-                        TankLevel = (decimal)r.Next(100, 10000)/(decimal)100,
-                        TankLevelDateTime = messageConstructionDate
-                    },
-                    new TankData()
-                    {
-                        TankId = "T2",
-                        TankLevel = (decimal)r.Next(100, 10000)/(decimal)100,
-                        TankLevelDateTime = messageConstructionDate
-                    }
-                };
+            //    data.TankLevels = new TankData[]
+            //    {
+            //        new TankData()
+            //        {
+            //            TankId = "T1",
+            //            TankLevel = (decimal)r.Next(100, 10000)/(decimal)100,
+            //            TankLevelDateTime = messageConstructionDate
+            //        },
+            //        new TankData()
+            //        {
+            //            TankId = "T2",
+            //            TankLevel = (decimal)r.Next(100, 10000)/(decimal)100,
+            //            TankLevelDateTime = messageConstructionDate
+            //        }
+            //    };
 
-                return JsonConvert.SerializeObject(data, Formatting.Indented);
-            }
-            else return null;
+            //    return JsonConvert.SerializeObject(data, Formatting.Indented);
+            //}
+            //else return null;
         }
 
         internal static string UpdateIds(string jsonMessage, string deviceId, string moduleId)

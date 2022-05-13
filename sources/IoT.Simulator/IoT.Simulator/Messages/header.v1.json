@@ -1,0 +1,21 @@
+{
+  "$schema": "https://sttronicotamedatapoc.blob.core.windows.net/schemas/header.schema.v1.json",
+
+  "logicalCorrelationId": "l",
+  "atp": "G000018953/12 G000004515/10",
+  "benchSerialNumber": "60002DF555_T01",
+  "cardSerialNumber": "j",
+  "customerCode": "e",
+  "fixtureSerialNumber": "k",
+
+  "of": "i",
+  "productRef": "b",
+  "registrationNumber": "h",
+  "sequenceName": "g",
+  "testSoftware": "v01.03",
+  "testStandVersion": "f",
+  "startDateTimeTest": "2022-05-13T12:00:00Z",
+
+  "messageType": "header",
+  "category": "benchTest"
+}
