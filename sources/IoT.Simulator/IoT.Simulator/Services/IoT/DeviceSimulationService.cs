@@ -187,7 +187,15 @@ namespace IoT.Simulator.Services
                         SendDeviceToCloudLatencyTestAsync(_deviceSettingsDelegate.CurrentValue.DeviceId, _simulationSettings.LatencyTestsFrecuency);
 
                     if (_simulationSettings.EnableTelemetryMessages)
-                        SendDeviceToCloudMessagesTelemetryAsync(_deviceSettingsDelegate.CurrentValue.DeviceId); //interval is a global variable changed by processes
+                    {
+                        Task.Run(async () =>
+                        {
+                            await SendDeviceToCloudMessagesHeaderTelemetryAsync(_deviceSettingsDelegate.CurrentValue.DeviceId);
+                            await SendDeviceToCloudMessagesInstrumentTelemetryAsync(_deviceSettingsDelegate.CurrentValue.DeviceId);
+                            await SendDeviceToCloudMessagesTestResultTelemetryAsync(_deviceSettingsDelegate.CurrentValue.DeviceId);
+                            await SendDeviceToCloudMessagesSanctionTelemetryAsync(_deviceSettingsDelegate.CurrentValue.DeviceId);
+                        });
+                    }
 
                     if (_simulationSettings.EnableStatusMessages)
                         SendDeviceToCloudMessagesStatusAsync(_deviceSettingsDelegate.CurrentValue.DeviceId); //interval is a global variable changed by processes
@@ -243,7 +251,7 @@ namespace IoT.Simulator.Services
 
             string messageString = string.Empty;
 
-            var telemetryMessagingService = _telemetryMessagingServices.SingleOrDefault(t => t.GetType() == typeof(CustomTelemetryMessageService));
+            var telemetryMessagingService = _telemetryMessagingServices.SingleOrDefault(t => t.GetType() == typeof(CustomHeaderTelemetryMessageService));
 
             if (telemetryMessagingService == null)
                 throw new Exception($"No telemetry messaging service has been found.");
@@ -257,7 +265,7 @@ namespace IoT.Simulator.Services
 
                     var message = new Message(Encoding.UTF8.GetBytes(messageString));
                     message.Properties.Add("messageType", "telemetry");
-                    message.Properties.Add("deviceType", "truck");
+                    message.Properties.Add("deviceType", "simulator");
 
                     // Add a custom application property to the message.
                     // An IoT hub can filter on these properties without access to the message body.
@@ -282,6 +290,175 @@ namespace IoT.Simulator.Services
                 }
             }
         }
+
+        internal async Task SendDeviceToCloudMessagesHeaderTelemetryAsync(string deviceId)
+        {
+            int counter = 0;
+            string logPrefix = "SendDeviceToCloudMessagesHeaderTelemetryAsync".BuildLogPrefix();
+
+            string messageString = string.Empty;
+
+            var telemetryMessagingService = _telemetryMessagingServices.SingleOrDefault(t => t.GetType() == typeof(CustomHeaderTelemetryMessageService));
+
+            if (telemetryMessagingService == null)
+                throw new Exception($"No telemetry messaging service has been found.");
+
+            using (_logger.BeginScope($"{logPrefix}::{DateTime.Now}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::MEASURED DATA"))
+            {
+                //Randomize data
+                messageString = await telemetryMessagingService.GetRandomizedMessageAsync(deviceId, string.Empty);
+
+                var message = new Message(Encoding.UTF8.GetBytes(messageString));
+                message.Properties.Add("messageType", "header");
+                message.Properties.Add("deviceType", "simulator");
+
+                // Add a custom application property to the message.
+                // An IoT hub can filter on these properties without access to the message body.
+                //message.Properties.Add("temperatureAlert", (currentTemperature > 30) ? "true" : "false");
+                message.ContentType = "application/json";
+                message.ContentEncoding = "utf-8";
+
+                // Send the tlemetry message
+                await _deviceClient.SendEventAsync(message);
+                counter++;
+
+                _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::Sent message: {messageString}.");
+                _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::COUNTER: {counter}.");
+            }
+        }
+
+        internal async Task SendDeviceToCloudMessagesInstrumentTelemetryAsync(string deviceId)
+        {
+            int counter = 0;
+            string logPrefix = "SendDeviceToCloudMessagesInstrumentTelemetryAsync".BuildLogPrefix();
+
+            string messageString = string.Empty;
+
+            var telemetryMessagingService = _telemetryMessagingServices.SingleOrDefault(t => t.GetType() == typeof(CustomInstrumentTelemetryMessageService));
+
+            if (telemetryMessagingService == null)
+                throw new Exception($"No telemetry messaging service has been found.");
+
+            using (_logger.BeginScope($"{logPrefix}::{DateTime.Now}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::MEASURED DATA"))
+            {
+                while (true && counter < 5)
+                {
+                    //Randomize data
+                    messageString = await telemetryMessagingService.GetRandomizedMessageAsync(deviceId, string.Empty);
+
+                    var message = new Message(Encoding.UTF8.GetBytes(messageString));
+                    message.Properties.Add("messageType", "instrument");
+                    message.Properties.Add("deviceType", "simulator");
+
+                    // Add a custom application property to the message.
+                    // An IoT hub can filter on these properties without access to the message body.
+                    //message.Properties.Add("temperatureAlert", (currentTemperature > 30) ? "true" : "false");
+                    message.ContentType = "application/json";
+                    message.ContentEncoding = "utf-8";
+
+                    // Send the tlemetry message
+                    await _deviceClient.SendEventAsync(message);
+                    counter++;
+
+                    _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::Sent message: {messageString}.");
+                    _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::COUNTER: {counter}.");
+
+                    if (_stopProcessing)
+                    {
+                        _logger.LogDebug($"{logPrefix}::STOP PROCESSING.");
+                        break;
+                    }
+
+                    await Task.Delay(1000);
+                }
+            }
+        }
+
+        internal async Task SendDeviceToCloudMessagesTestResultTelemetryAsync(string deviceId)
+        {
+            int counter = 0;
+            string logPrefix = "SendDeviceToCloudMessagesTestResultTelemetryAsync".BuildLogPrefix();
+
+            string messageString = string.Empty;
+
+            var telemetryMessagingService = _telemetryMessagingServices.SingleOrDefault(t => t.GetType() == typeof(CustomTestResultTelemetryMessageService));
+
+            if (telemetryMessagingService == null)
+                throw new Exception($"No telemetry messaging service has been found.");
+
+            using (_logger.BeginScope($"{logPrefix}::{DateTime.Now}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::MEASURED DATA"))
+            {
+                while (true && counter < 10)
+                {
+                    //Randomize data
+                    messageString = await telemetryMessagingService.GetRandomizedMessageAsync(deviceId, string.Empty);
+
+                    var message = new Message(Encoding.UTF8.GetBytes(messageString));
+                    message.Properties.Add("messageType", "testResult");
+                    message.Properties.Add("deviceType", "simulator");
+
+                    // Add a custom application property to the message.
+                    // An IoT hub can filter on these properties without access to the message body.
+                    //message.Properties.Add("temperatureAlert", (currentTemperature > 30) ? "true" : "false");
+                    message.ContentType = "application/json";
+                    message.ContentEncoding = "utf-8";
+
+                    // Send the tlemetry message
+                    await _deviceClient.SendEventAsync(message);
+                    counter++;
+
+                    _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::Sent message: {messageString}.");
+                    _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::COUNTER: {counter}.");
+
+                    if (_stopProcessing)
+                    {
+                        _logger.LogDebug($"{logPrefix}::STOP PROCESSING.");
+                        break;
+                    }
+
+                    await Task.Delay(_telemetryInterval * 1000);
+                }
+            }
+        }
+
+        internal async Task SendDeviceToCloudMessagesSanctionTelemetryAsync(string deviceId)
+        {
+            int counter = 0;
+            string logPrefix = "SendDeviceToCloudMessagesSanctionTelemetryAsync".BuildLogPrefix();
+
+            string messageString = string.Empty;
+
+            var telemetryMessagingService = _telemetryMessagingServices.SingleOrDefault(t => t.GetType() == typeof(CustomSanctionTelemetryMessageService));
+
+            if (telemetryMessagingService == null)
+                throw new Exception($"No telemetry messaging service has been found.");
+
+            using (_logger.BeginScope($"{logPrefix}::{DateTime.Now}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::MEASURED DATA"))
+            {
+                //Randomize data
+                messageString = await telemetryMessagingService.GetRandomizedMessageAsync(deviceId, string.Empty);
+
+                var message = new Message(Encoding.UTF8.GetBytes(messageString));
+                message.Properties.Add("messageType", "sanction");
+                message.Properties.Add("deviceType", "simulator");
+
+                // Add a custom application property to the message.
+                // An IoT hub can filter on these properties without access to the message body.
+                //message.Properties.Add("temperatureAlert", (currentTemperature > 30) ? "true" : "false");
+                message.ContentType = "application/json";
+                message.ContentEncoding = "utf-8";
+
+                // Send the tlemetry message
+                await _deviceClient.SendEventAsync(message);
+                counter++;
+
+                _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::Sent message: {messageString}.");
+                _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::COUNTER: {counter}.");
+            }
+        }
+
+
+
 
         internal async Task SendDeviceToCloudMessagesStatusAsync(string deviceId)
         {
@@ -327,6 +504,8 @@ namespace IoT.Simulator.Services
                 }
             }
         }
+
+
 
         internal async Task SendDeviceToCloudErrorAsync(string deviceId, int interval)
         {

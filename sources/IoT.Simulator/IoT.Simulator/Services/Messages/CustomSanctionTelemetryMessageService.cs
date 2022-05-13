@@ -18,7 +18,7 @@ namespace IoT.Simulator.Services
     public class CustomSanctionTelemetryMessageService : ITelemetryMessageService
     {
         private ILogger _logger;
-        private string fileTemplatePath = @"./Messages/instrument.v1.json";
+        private string fileTemplatePath = @"./Messages/sanction.v1.json";
 
         public CustomSanctionTelemetryMessageService(ILoggerFactory loggerFactory)
         {
