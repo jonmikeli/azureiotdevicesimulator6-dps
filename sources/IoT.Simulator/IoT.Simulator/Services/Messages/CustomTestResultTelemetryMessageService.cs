@@ -85,7 +85,7 @@ namespace IoT.Simulator.Services
                 data["logicalCorrelationId"] = $"simulator-integration-test-{messageConstructionDate.ToString("yyyyMMdd-HH")}";
                 data["testStartDateTime"] = messageConstructionDate.ToString("yyyy-MM-ddTHH:mm:ssZ");                
                 data["testEndDateTime"] = messageConstructionDate.AddMinutes(r.Next(0,120)).ToString("yyyy-MM-ddTHH:mm:ssZ");
-                data["result"] = (double)(r.Next(5000, 200000)/100);
+                data["result"] = ((double)(r.Next(5000, 200000)/100)).ToString();
                 data["sanction"] = r.Next(0, 10) > 5 ? "PASS" : "FAIL";                
 
                 return JsonConvert.SerializeObject(data, Formatting.Indented);

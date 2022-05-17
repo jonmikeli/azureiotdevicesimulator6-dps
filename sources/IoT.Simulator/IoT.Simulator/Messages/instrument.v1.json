@@ -2,13 +2,13 @@
   "$schema": "https://sttronicotamedatapoc.blob.core.windows.net/schemas/instrument.schema.v1.json",
 
   "logicalCorrelationId": "simulator-integration-test",
-  "instrumentId": 0,
+  "instrumentId": "0",
   "tronicoId": "XX/YYYY",
   "designation": "d",
   "reference": "r",
   "serialNumber": "n",
-  "calibrationDate": "2022-04-25",
-  "calibrationDueDate": "2022-04-25",
+  "calibrationDate": "2022-04-25T00:00:00Z",
+  "calibrationDueDate": "2022-04-25T00:00:00Z",
   "status": "OK",
 
   "messageType": "instrument",
