@@ -3,6 +3,7 @@ using CommandLine.Text;
 
 using IoT.Simulator.Exceptions;
 using IoT.Simulator.Services;
+using IoT.Simulator.Services.Business;
 using IoT.Simulator.Settings;
 using IoT.Simulator.Settings.DPS;
 using IoT.Simulator.Tools;
@@ -542,6 +543,7 @@ namespace IoT.Simulator
             services.AddTransient<ITelemetryMessageService, CustomFuelingTelemetryMessageService>();
             services.AddTransient<IErrorMessageService, SimpleErrorMessageService>();
             services.AddTransient<ICommissioningMessageService, SimpleCommissioningMessageService>();
+            services.AddSingleton<IGeoLocalizationService, GeolocalisationService>();
         }
 
         //TODO: take into account the CA X509 settings
