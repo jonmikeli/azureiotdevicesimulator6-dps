@@ -88,7 +88,7 @@ namespace IoT.Simulator.Services
                 throw new ArgumentNullException(nameof(geoLocalizationService));
 
             if (statusManagerService == null)
-                throw new ArgumentNullException(nameof(statusManagerService));            
+                throw new ArgumentNullException(nameof(statusManagerService));
 
             if (loggerFactory == null)
                 throw new ArgumentNullException(nameof(loggerFactory), "No logger factory has been provided.");
@@ -112,7 +112,7 @@ namespace IoT.Simulator.Services
             _geoLocalizationService = geoLocalizationService;
             _statusManagerService = statusManagerService;
 
-            _environmentName = Environment.GetEnvironmentVariable("ENVIRONMENT");            
+            _environmentName = Environment.GetEnvironmentVariable("ENVIRONMENT");
 
             string logPrefix = "system".BuildLogPrefix();
             _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::Logger created.");
@@ -252,7 +252,7 @@ namespace IoT.Simulator.Services
 
         // Async method to send simulated telemetry
         internal async Task SendDeviceToCloudMessagesTelemetryAsync(string deviceId)
-        {           
+        {
             int counter = 0;
             string logPrefix = "SendDeviceToCloudMessagesTelemetryAsync".BuildLogPrefix();
 
@@ -269,11 +269,7 @@ namespace IoT.Simulator.Services
                 while (true)
                 {
                     status = _statusManagerService.GetStatus();
-                    if (status != null && status.StatusValue.Contains("fueling"))
-                    {
-                        _logger.LogWarning($"{_deviceSettingsDelegate.CurrentValue.ArtifactId}::SendDeviceToCloudMessagesTelemetryAsync::Fueling status is active. Regular telemetry cannot be sent under this status.");
-                    }
-                    else
+                    if (status != null && !status.StatusValue.Contains("fueling"))
                     {
                         //Randomize data
                         messageString = await telemetryMessagingService.GetRandomizedMessageAsync(deviceId, string.Empty);
@@ -308,7 +304,7 @@ namespace IoT.Simulator.Services
         }
 
         internal async Task SendDeviceToCloudMessagesFuelingAsync(string deviceId)
-        {           
+        {
             int counter = 0;
             string logPrefix = "SendDeviceToCloudMessagesFuelingAsync".BuildLogPrefix();
 
@@ -324,11 +320,7 @@ namespace IoT.Simulator.Services
                 while (true)
                 {
                     status = _statusManagerService.GetStatus();
-                    if (status != null && !status.StatusValue.Contains("fueling"))
-                    {
-                        _logger.LogWarning($"{_deviceSettingsDelegate.CurrentValue.ArtifactId}::SendDeviceToCloudMessagesTelemetryAsync::Fueling status is NOT active. Fueling session telemetry can only be sent under this status.");
-                    }
-                    else
+                    if (status != null && status.StatusValue.Contains("fueling"))
                     {
                         //Randomize data
                         messageString = await fuelingMessagingService.GetRandomizedMessageAsync(deviceId, string.Empty);
@@ -790,7 +782,7 @@ namespace IoT.Simulator.Services
             string logPrefix = "c2ddirectmethods".BuildLogPrefix();
             string result = string.Empty;
             int status = 200;
-            
+
             try
             {
                 var data = Encoding.UTF8.GetString(methodRequest.Data);
@@ -806,10 +798,10 @@ namespace IoT.Simulator.Services
                         Latitude = position.Latitude,
                         Longitude = position.Longitude,
                         PositionDateTime = DateTime.UtcNow
-                    });                
+                    });
 
                     // Acknowlege the direct method call with a 200 success message
-                    result = "{\"result\":\"Executed direct method: " + methodRequest.Name + "\"}";                    
+                    result = "{\"result\":\"Executed direct method: " + methodRequest.Name + "\"}";
                 }
                 else
                 {
@@ -832,21 +824,21 @@ namespace IoT.Simulator.Services
             string logPrefix = "c2ddirectmethods".BuildLogPrefix();
             string result = string.Empty;
             int status = 200;
-            
+
             try
             {
                 var statusValue = Encoding.UTF8.GetString(methodRequest.Data);
-                
+
                 if (!string.IsNullOrEmpty(statusValue))
-{
+                {
                     _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::Set status {statusValue}.");
 
                     _statusManagerService.UpdateStatus(statusValue);
 
                     await GenericTwinReportedUpdateAsync(_deviceId, string.Empty, "status", statusValue);
-                    
+
                     // Acknowlege the direct method call with a 200 success message
-                    result = "{\"result\":\"Executed direct method: " + methodRequest.Name + "\"}";                    
+                    result = "{\"result\":\"Executed direct method: " + methodRequest.Name + "\"}";
                 }
                 else
                 {
