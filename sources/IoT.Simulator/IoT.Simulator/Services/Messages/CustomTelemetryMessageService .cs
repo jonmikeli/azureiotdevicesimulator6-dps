@@ -86,7 +86,7 @@ namespace IoT.Simulator.Services
                 Random r = new Random(DateTime.Now.Second);
                 DateTime messageConstructionDate = DateTime.UtcNow;
 
-                data.Position = _geoLocalizationService.RandomizePosition(data.Position, PositionRandomType.FullRandom, RandomPositionPrecision.m);
+                data.Position = _geoLocalizationService.RandomizePosition(PositionRandomType.FullRandom, RandomPositionPrecision.m);
 
                 data.MessageDateTime = messageConstructionDate;
                 data.BatteryLevels = new BatteryData[]
