@@ -3,6 +3,9 @@
     public enum PositionRandomType
     {
         Forward,
+        Circular,
+        Rectangular,
+        Path,
         FullRandom
     }
 }

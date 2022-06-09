@@ -1,5 +1,6 @@
 ﻿using IoT.Simulator.Extensions;
 using IoT.Simulator.Models;
+using IoT.Simulator.Services.Business;
 using IoT.Simulator.Tools;
 
 using Microsoft.Extensions.Logging;
@@ -16,13 +17,18 @@ namespace IoT.Simulator.Services
     public class CustomTelemetryMessageService : ITelemetryMessageService
     {
         private ILogger _logger;
+        private IGeoLocalizationService _geoLocalizationService;
         private string fileTemplatePath = @"./Messages/telemetriesBundle.v1.json";
 
-        public CustomTelemetryMessageService(ILoggerFactory loggerFactory)
+        public CustomTelemetryMessageService(IGeoLocalizationService geoLocalizationService,  ILoggerFactory loggerFactory)
         {
+            if (geoLocalizationService == null)
+                throw new ArgumentNullException(nameof(geoLocalizationService));
+            
             if (loggerFactory == null)
                 throw new ArgumentNullException(nameof(loggerFactory));
 
+            _geoLocalizationService = geoLocalizationService;
             _logger = loggerFactory.CreateLogger<CustomTelemetryMessageService>();
         }
 
@@ -80,12 +86,7 @@ namespace IoT.Simulator.Services
                 Random r = new Random(DateTime.Now.Second);
                 DateTime messageConstructionDate = DateTime.UtcNow;
 
-                if (data.Position != null)
-                {
-                    data.Position.Latitude = data.Position.Latitude + (decimal)r.Next(5, 20) / 10;
-                    data.Position.Longitude = data.Position.Longitude + (decimal)r.Next(5, 20) / 10;
-                    data.Position.PositionDateTime = messageConstructionDate;
-                }
+                data.Position = _geoLocalizationService.RandomizePosition(data.Position, PositionRandomType.FullRandom, RandomPositionPrecision.m);
 
                 data.MessageDateTime = messageConstructionDate;
                 data.BatteryLevels = new BatteryData[]

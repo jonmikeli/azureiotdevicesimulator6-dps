@@ -4,6 +4,7 @@ using IoT.Simulator.Services.Business;
 using IoT.Simulator.Tools;
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 using Newtonsoft.Json;
 
@@ -20,7 +21,7 @@ namespace IoT.Simulator.Services
         private IGeoLocalizationService _geoLocalizationService;
         private string fileTemplatePath = @"./Messages/fueling.v1.json";
 
-        public CustomFuelingTelemetryMessageService(IGeoLocalizationService geoLocalizationService,ILoggerFactory loggerFactory)
+        public CustomFuelingTelemetryMessageService(IGeoLocalizationService geoLocalizationService, ILoggerFactory loggerFactory)
         {
             if (geoLocalizationService == null)
                 throw new ArgumentNullException(nameof(geoLocalizationService));
@@ -96,7 +97,7 @@ namespace IoT.Simulator.Services
                 data.Value.RegularPressure = (decimal)r.Next(1000, 1300);
                 data.Value.InterlockOverride = false;
 
-                data.Value.Position = _geoLocalizationService.RandomizePosition(data.Value.Position, PositionRandomType.Forward, RandomPositionPrecision.m);
+                data.Value.Position = _geoLocalizationService.RandomizePosition(PositionRandomType.FullRandom, RandomPositionPrecision.m);                
 
                 data.MessageDateTime = messageConstructionDate;
                 data.Value.BatteryLevelsAtStart = new BatteryData[]

@@ -8,17 +8,25 @@
     "enableModules": false,
     "enableTelemetryMessages": false,
     "telemetryFrecuency": 10,
-    "enableFuelingMessages": false,
+    "enableFuelingMessages": true,
     "fuelingFrecuency": 30,
     "enableErrorMessages": false,
     "errorFrecuency": 20,
-    "enableCommissioningMessages": true,
+    "enableCommissioningMessages": false,
     "commissioningFrecuency": 60,
     "enableTwinReportedMessages": false,
     "twinReportedMessagesFrecuency": 60,
     "enableReadingTwinProperties": false,
     "enableC2DDirectMethods": true,
     "enableC2DMessages": true,
-    "enableTwinPropertiesDesiredChangesNotifications": true
+    "enableTwinPropertiesDesiredChangesNotifications": true,
+    "positionSettings": {
+      "positionType": "dynamic", //static, dynamic
+      "initialPosition": {
+        "latitude": -34.6037,
+        "longitude": -58.3816,
+        "altitude": 0
+      }
+    }      
   }
 }

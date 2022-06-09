@@ -22,5 +22,8 @@ namespace IoT.Simulator.Settings
         public int NumberOfMessagesToUpload { get; set; }
         [JsonProperty("fileUploadStorage")]
         public BlobStorageSettings FileUploadStorage { get; set; }
+        
+        [JsonProperty("positionSettings")]
+        public PositionSettings PositionSettings { get; set; }
     }
 }

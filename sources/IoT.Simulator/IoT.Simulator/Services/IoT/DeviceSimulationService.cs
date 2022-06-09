@@ -1,5 +1,6 @@
 ﻿using IoT.Simulator.Extensions;
 using IoT.Simulator.Models;
+using IoT.Simulator.Services.Business;
 using IoT.Simulator.Settings;
 using IoT.Simulator.Settings.DPS;
 using IoT.Simulator.Tools;
@@ -34,13 +35,13 @@ namespace IoT.Simulator.Services
         private string _iotHub;
         private int _telemetryInterval;
         private int _fuelingTelemetryInterval;
-        private bool _stopProcessing = false;
-        private Position _initialPosition = null;
+        private bool _stopProcessing = false;        
 
         private IEnumerable<ITelemetryMessageService> _telemetryMessagingServices;
         private IErrorMessageService _errorMessagingService;
         private ICommissioningMessageService _commissioningMessagingService;
         private IProvisioningService _provisioningService;
+        private IGeoLocalizationService _geoLocalizationService;
         private string _environmentName;
 
         public DeviceSimulationService(
@@ -50,6 +51,7 @@ namespace IoT.Simulator.Services
             IErrorMessageService errorMessagingService,
             ICommissioningMessageService commissioningMessagingService,
             IProvisioningService provisioningService,
+            IGeoLocalizationService geoLocalizationService,
             ILoggerFactory loggerFactory)
         {
             if (deviceSettingsDelegate == null)
@@ -79,6 +81,9 @@ namespace IoT.Simulator.Services
             if (provisioningService == null)
                 throw new ArgumentNullException(nameof(provisioningService));
 
+            if (geoLocalizationService == null)
+                throw new ArgumentNullException(nameof(geoLocalizationService));
+
             if (loggerFactory == null)
                 throw new ArgumentNullException(nameof(loggerFactory), "No logger factory has been provided.");
 
@@ -98,15 +103,9 @@ namespace IoT.Simulator.Services
             _errorMessagingService = errorMessagingService;
             _commissioningMessagingService = commissioningMessagingService;
             _provisioningService = provisioningService;
+            _geoLocalizationService = geoLocalizationService;
 
-            _environmentName = Environment.GetEnvironmentVariable("ENVIRONMENT");
-
-            _initialPosition = new Position
-            {
-                Latitude = 0,
-                Longitude = 0,
-                PositionDateTime = DateTime.UtcNow
-            };
+            _environmentName = Environment.GetEnvironmentVariable("ENVIRONMENT");            
 
             string logPrefix = "system".BuildLogPrefix();
             _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::Logger created.");
@@ -540,7 +539,7 @@ namespace IoT.Simulator.Services
                 await _deviceClient.SetMethodHandlerAsync("ReadTwins", ReadTwinsAsync, null);
                 _logger.LogTrace($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::DIRECT METHOD ReadTwins registered.");
 
-                await _deviceClient.SetMethodHandlerAsync("SetInitialPosition", SetTelemetryInterval, null);
+                await _deviceClient.SetMethodHandlerAsync("SetInitialPosition", SetInitialPosition, null);
                 _logger.LogTrace($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::DIRECT METHOD SetInitialPosition registered.");
 
                 await _deviceClient.SetMethodHandlerAsync("GenericJToken", GenericJToken, null);
@@ -768,13 +767,18 @@ namespace IoT.Simulator.Services
             {
                 var data = Encoding.UTF8.GetString(methodRequest.Data);
 
-                Position position = JsonConvert.DeserializeObject<Position>(data);
+                IoT.Simulator.Models.Position position = JsonConvert.DeserializeObject<IoT.Simulator.Models.Position>(data);
 
                 if (position != null)
                 {
                     _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::Initial position set to {data}.");
 
-                    _initialPosition = position;
+                    _geoLocalizationService.UpdateInitialPosution(new Models.Position
+                    {
+                        Latitude = position.Latitude,
+                        Longitude = position.Longitude,
+                        PositionDateTime = DateTime.UtcNow
+                    });                
 
                     // Acknowlege the direct method call with a 200 success message
                     result = "{\"result\":\"Executed direct method: " + methodRequest.Name + "\"}";                    
