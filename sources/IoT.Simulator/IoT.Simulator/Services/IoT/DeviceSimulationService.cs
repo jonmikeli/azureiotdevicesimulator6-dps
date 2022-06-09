@@ -831,6 +831,8 @@ namespace IoT.Simulator.Services
 
                 if (!string.IsNullOrEmpty(statusValue))
                 {
+                    statusValue = statusValue.Replace("\"", String.Empty);
+                    
                     _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::Set status {statusValue}.");
 
                     _statusManagerService.UpdateStatus(statusValue);
