@@ -544,6 +544,7 @@ namespace IoT.Simulator
             services.AddTransient<IErrorMessageService, SimpleErrorMessageService>();
             services.AddTransient<ICommissioningMessageService, SimpleCommissioningMessageService>();
             services.AddSingleton<IGeoLocalizationService, GeolocalisationService>();
+            services.AddSingleton<IStatusManagerService, StatusManagerService>();            
         }
 
         //TODO: take into account the CA X509 settings

@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -35,13 +36,14 @@ namespace IoT.Simulator.Services
         private string _iotHub;
         private int _telemetryInterval;
         private int _fuelingTelemetryInterval;
-        private bool _stopProcessing = false;        
+        private bool _stopProcessing = false;
 
         private IEnumerable<ITelemetryMessageService> _telemetryMessagingServices;
         private IErrorMessageService _errorMessagingService;
         private ICommissioningMessageService _commissioningMessagingService;
         private IProvisioningService _provisioningService;
         private IGeoLocalizationService _geoLocalizationService;
+        private IStatusManagerService _statusManagerService;
         private string _environmentName;
 
         public DeviceSimulationService(
@@ -52,6 +54,7 @@ namespace IoT.Simulator.Services
             ICommissioningMessageService commissioningMessagingService,
             IProvisioningService provisioningService,
             IGeoLocalizationService geoLocalizationService,
+            IStatusManagerService statusManagerService,
             ILoggerFactory loggerFactory)
         {
             if (deviceSettingsDelegate == null)
@@ -84,6 +87,9 @@ namespace IoT.Simulator.Services
             if (geoLocalizationService == null)
                 throw new ArgumentNullException(nameof(geoLocalizationService));
 
+            if (statusManagerService == null)
+                throw new ArgumentNullException(nameof(statusManagerService));            
+
             if (loggerFactory == null)
                 throw new ArgumentNullException(nameof(loggerFactory), "No logger factory has been provided.");
 
@@ -104,6 +110,7 @@ namespace IoT.Simulator.Services
             _commissioningMessagingService = commissioningMessagingService;
             _provisioningService = provisioningService;
             _geoLocalizationService = geoLocalizationService;
+            _statusManagerService = statusManagerService;
 
             _environmentName = Environment.GetEnvironmentVariable("ENVIRONMENT");            
 
@@ -245,7 +252,7 @@ namespace IoT.Simulator.Services
 
         // Async method to send simulated telemetry
         internal async Task SendDeviceToCloudMessagesTelemetryAsync(string deviceId)
-        {
+        {           
             int counter = 0;
             string logPrefix = "SendDeviceToCloudMessagesTelemetryAsync".BuildLogPrefix();
 
@@ -256,43 +263,52 @@ namespace IoT.Simulator.Services
             if (telemetryMessagingService == null)
                 throw new Exception($"No telemetry messaging service has been found.");
 
+            Status status = null;
             using (_logger.BeginScope($"{logPrefix}::{DateTime.Now}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::MEASURED DATA"))
             {
                 while (true)
                 {
-                    //Randomize data
-                    messageString = await telemetryMessagingService.GetRandomizedMessageAsync(deviceId, string.Empty);
-
-                    var message = new Message(Encoding.UTF8.GetBytes(messageString));
-                    message.Properties.Add("messageType", "telemetry");
-                    message.Properties.Add("deviceType", "truck");
-
-                    // Add a custom application property to the message.
-                    // An IoT hub can filter on these properties without access to the message body.
-                    //message.Properties.Add("temperatureAlert", (currentTemperature > 30) ? "true" : "false");
-                    message.ContentType = "application/json";
-                    message.ContentEncoding = "utf-8";
-
-                    // Send the tlemetry message
-                    await _deviceClient.SendEventAsync(message);
-                    counter++;
-
-                    _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::Sent message: {messageString}.");
-                    _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::COUNTER: {counter}.");
-
-                    if (_stopProcessing)
+                    status = _statusManagerService.GetStatus();
+                    if (status != null && status.StatusValue.Contains("fueling"))
                     {
-                        _logger.LogDebug($"{logPrefix}::STOP PROCESSING.");
-                        break;
+                        _logger.LogWarning($"{_deviceSettingsDelegate.CurrentValue.ArtifactId}::SendDeviceToCloudMessagesTelemetryAsync::Fueling status is active. Regular telemetry cannot be sent under this status.");
                     }
+                    else
+                    {
+                        //Randomize data
+                        messageString = await telemetryMessagingService.GetRandomizedMessageAsync(deviceId, string.Empty);
 
-                    await Task.Delay(_telemetryInterval * 1000);
+                        var message = new Message(Encoding.UTF8.GetBytes(messageString));
+                        message.Properties.Add("messageType", "telemetry");
+                        message.Properties.Add("deviceType", "truck");
+
+                        // Add a custom application property to the message.
+                        // An IoT hub can filter on these properties without access to the message body.
+                        //message.Properties.Add("temperatureAlert", (currentTemperature > 30) ? "true" : "false");
+                        message.ContentType = "application/json";
+                        message.ContentEncoding = "utf-8";
+
+                        // Send the tlemetry message
+                        await _deviceClient.SendEventAsync(message);
+                        counter++;
+
+                        _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::Sent message: {messageString}.");
+                        _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::COUNTER: {counter}.");
+
+                        if (_stopProcessing)
+                        {
+                            _logger.LogDebug($"{logPrefix}::STOP PROCESSING.");
+                            break;
+                        }
+
+                        await Task.Delay(_telemetryInterval * 1000);
+                    }
                 }
             }
         }
 
         internal async Task SendDeviceToCloudMessagesFuelingAsync(string deviceId)
-        {
+        {           
             int counter = 0;
             string logPrefix = "SendDeviceToCloudMessagesFuelingAsync".BuildLogPrefix();
 
@@ -302,37 +318,46 @@ namespace IoT.Simulator.Services
             if (fuelingMessagingService == null)
                 throw new Exception($"No fueling telemetry messaging service has been found.");
 
+            Status status = null;
             using (_logger.BeginScope($"{logPrefix}::{DateTime.Now}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::MEASURED DATA"))
             {
                 while (true)
                 {
-                    //Randomize data
-                    messageString = await fuelingMessagingService.GetRandomizedMessageAsync(deviceId, string.Empty);
-
-                    var message = new Message(Encoding.UTF8.GetBytes(messageString));
-                    message.Properties.Add("messageType", "fuelingsimple");
-                    message.Properties.Add("deviceType", "truck");
-
-                    // Add a custom application property to the message.
-                    // An IoT hub can filter on these properties without access to the message body.
-                    //message.Properties.Add("temperatureAlert", (currentTemperature > 30) ? "true" : "false");
-                    message.ContentType = "application/json";
-                    message.ContentEncoding = "utf-8";
-
-                    // Send the tlemetry message
-                    await _deviceClient.SendEventAsync(message);
-                    counter++;
-
-                    _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::Sent message: {messageString}.");
-                    _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::COUNTER: {counter}.");
-
-                    if (_stopProcessing)
+                    status = _statusManagerService.GetStatus();
+                    if (status != null && !status.StatusValue.Contains("fueling"))
                     {
-                        _logger.LogDebug($"{logPrefix}::STOP PROCESSING.");
-                        break;
+                        _logger.LogWarning($"{_deviceSettingsDelegate.CurrentValue.ArtifactId}::SendDeviceToCloudMessagesTelemetryAsync::Fueling status is NOT active. Fueling session telemetry can only be sent under this status.");
                     }
+                    else
+                    {
+                        //Randomize data
+                        messageString = await fuelingMessagingService.GetRandomizedMessageAsync(deviceId, string.Empty);
 
-                    await Task.Delay(_fuelingTelemetryInterval * 1000);
+                        var message = new Message(Encoding.UTF8.GetBytes(messageString));
+                        message.Properties.Add("messageType", "fuelingsimple");
+                        message.Properties.Add("deviceType", "truck");
+
+                        // Add a custom application property to the message.
+                        // An IoT hub can filter on these properties without access to the message body.
+                        //message.Properties.Add("temperatureAlert", (currentTemperature > 30) ? "true" : "false");
+                        message.ContentType = "application/json";
+                        message.ContentEncoding = "utf-8";
+
+                        // Send the tlemetry message
+                        await _deviceClient.SendEventAsync(message);
+                        counter++;
+
+                        _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::Sent message: {messageString}.");
+                        _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::COUNTER: {counter}.");
+
+                        if (_stopProcessing)
+                        {
+                            _logger.LogDebug($"{logPrefix}::STOP PROCESSING.");
+                            break;
+                        }
+
+                        await Task.Delay(_fuelingTelemetryInterval * 1000);
+                    }
                 }
             }
         }
@@ -541,6 +566,9 @@ namespace IoT.Simulator.Services
 
                 await _deviceClient.SetMethodHandlerAsync("SetInitialPosition", SetInitialPosition, null);
                 _logger.LogTrace($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::DIRECT METHOD SetInitialPosition registered.");
+
+                await _deviceClient.SetMethodHandlerAsync("SetStatus", SetStatus, null);
+                _logger.LogTrace($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::DIRECT METHOD SetStatus registered.");
 
                 await _deviceClient.SetMethodHandlerAsync("GenericJToken", GenericJToken, null);
                 _logger.LogTrace($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::DIRECT METHOD GenericJToken registered.");
@@ -797,6 +825,43 @@ namespace IoT.Simulator.Services
             }
 
             return Task.FromResult(new MethodResponse(Encoding.UTF8.GetBytes(result), status));
+        }
+
+        private async Task<MethodResponse> SetStatus(MethodRequest methodRequest, object userContext)
+        {
+            string logPrefix = "c2ddirectmethods".BuildLogPrefix();
+            string result = string.Empty;
+            int status = 200;
+            
+            try
+            {
+                var statusValue = Encoding.UTF8.GetString(methodRequest.Data);
+                
+                if (!string.IsNullOrEmpty(statusValue))
+{
+                    _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::Set status {statusValue}.");
+
+                    _statusManagerService.UpdateStatus(statusValue);
+
+                    await GenericTwinReportedUpdateAsync(_deviceId, string.Empty, "status", statusValue);
+                    
+                    // Acknowlege the direct method call with a 200 success message
+                    result = "{\"result\":\"Executed direct method: " + methodRequest.Name + "\"}";                    
+                }
+                else
+                {
+                    // Acknowlege the direct method call with a 400 error message
+                    result = "{\"result\":\"Invalid parameter\"}";
+                    status = 400;
+                }
+            }
+            catch (Exception ex)
+            {
+                status = 400;
+                _logger.LogError($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::{ex.Message}.");
+            }
+
+            return new MethodResponse(Encoding.UTF8.GetBytes(result), status);
         }
 
         private Task<MethodResponse> DefaultC2DMethodHandler(MethodRequest methodRequest, object userContext)

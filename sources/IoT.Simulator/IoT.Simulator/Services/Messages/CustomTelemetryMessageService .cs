@@ -18,17 +18,25 @@ namespace IoT.Simulator.Services
     {
         private ILogger _logger;
         private IGeoLocalizationService _geoLocalizationService;
+        private IStatusManagerService _statusManagerService;
         private string fileTemplatePath = @"./Messages/telemetriesBundle.v1.json";
 
-        public CustomTelemetryMessageService(IGeoLocalizationService geoLocalizationService,  ILoggerFactory loggerFactory)
+        public CustomTelemetryMessageService(
+            IGeoLocalizationService geoLocalizationService,
+            IStatusManagerService statusManagerService,
+            ILoggerFactory loggerFactory)
         {
             if (geoLocalizationService == null)
                 throw new ArgumentNullException(nameof(geoLocalizationService));
-            
+
+            if (statusManagerService == null)
+                throw new ArgumentNullException(nameof(statusManagerService));
+
             if (loggerFactory == null)
                 throw new ArgumentNullException(nameof(loggerFactory));
 
             _geoLocalizationService = geoLocalizationService;
+            _statusManagerService = statusManagerService;
             _logger = loggerFactory.CreateLogger<CustomTelemetryMessageService>();
         }
 
@@ -87,6 +95,7 @@ namespace IoT.Simulator.Services
                 DateTime messageConstructionDate = DateTime.UtcNow;
 
                 data.Position = _geoLocalizationService.RandomizePosition(PositionRandomType.FullRandom, RandomPositionPrecision.m);
+                data.Status = _statusManagerService.GetStatus();
 
                 data.MessageDateTime = messageConstructionDate;
                 data.BatteryLevels = new BatteryData[]
