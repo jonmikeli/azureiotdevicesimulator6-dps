@@ -1,4 +1,5 @@
 ﻿using IoT.Simulator.Extensions;
+using IoT.Simulator.Models;
 using IoT.Simulator.Settings;
 using IoT.Simulator.Settings.DPS;
 using IoT.Simulator.Tools;
@@ -34,6 +35,7 @@ namespace IoT.Simulator.Services
         private int _telemetryInterval;
         private int _fuelingTelemetryInterval;
         private bool _stopProcessing = false;
+        private Position _initialPosition = null;
 
         private IEnumerable<ITelemetryMessageService> _telemetryMessagingServices;
         private IErrorMessageService _errorMessagingService;
@@ -98,6 +100,13 @@ namespace IoT.Simulator.Services
             _provisioningService = provisioningService;
 
             _environmentName = Environment.GetEnvironmentVariable("ENVIRONMENT");
+
+            _initialPosition = new Position
+            {
+                Latitude = 0,
+                Longitude = 0,
+                PositionDateTime = DateTime.UtcNow
+            };
 
             string logPrefix = "system".BuildLogPrefix();
             _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::Logger created.");
@@ -531,6 +540,9 @@ namespace IoT.Simulator.Services
                 await _deviceClient.SetMethodHandlerAsync("ReadTwins", ReadTwinsAsync, null);
                 _logger.LogTrace($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::DIRECT METHOD ReadTwins registered.");
 
+                await _deviceClient.SetMethodHandlerAsync("SetInitialPosition", SetTelemetryInterval, null);
+                _logger.LogTrace($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::DIRECT METHOD SetInitialPosition registered.");
+
                 await _deviceClient.SetMethodHandlerAsync("GenericJToken", GenericJToken, null);
                 _logger.LogTrace($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::DIRECT METHOD GenericJToken registered.");
 
@@ -744,6 +756,43 @@ namespace IoT.Simulator.Services
 
             string result = "{\"result\":\"Executed direct method: " + methodRequest.Name + "\"}";
             return Task.FromResult(new MethodResponse(Encoding.UTF8.GetBytes(result), 200));
+        }
+
+        private Task<MethodResponse> SetInitialPosition(MethodRequest methodRequest, object userContext)
+        {
+            string logPrefix = "c2ddirectmethods".BuildLogPrefix();
+            string result = string.Empty;
+            int status = 200;
+            
+            try
+            {
+                var data = Encoding.UTF8.GetString(methodRequest.Data);
+
+                Position position = JsonConvert.DeserializeObject<Position>(data);
+
+                if (position != null)
+                {
+                    _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::Initial position set to {data}.");
+
+                    _initialPosition = position;
+
+                    // Acknowlege the direct method call with a 200 success message
+                    result = "{\"result\":\"Executed direct method: " + methodRequest.Name + "\"}";                    
+                }
+                else
+                {
+                    // Acknowlege the direct method call with a 400 error message
+                    result = "{\"result\":\"Invalid parameter\"}";
+                    status = 400;
+                }
+            }
+            catch (Exception ex)
+            {
+                status = 400;
+                _logger.LogError($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::{ex.Message}.");
+            }
+
+            return Task.FromResult(new MethodResponse(Encoding.UTF8.GetBytes(result), status));
         }
 
         private Task<MethodResponse> DefaultC2DMethodHandler(MethodRequest methodRequest, object userContext)
