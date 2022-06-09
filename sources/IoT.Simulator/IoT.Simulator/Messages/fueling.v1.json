@@ -18,7 +18,7 @@
     "averageFlowRate": 15.4,
     "regularPressure": 84.2,
     "interlockOverride": true,
-    "batteriesLevelesAtTheBeginning": [
+    "batteriesLevelsAtTheBeginning": [
       {
         "batteryId": "",
         "batteryLevel": 0,
@@ -30,7 +30,7 @@
         "batteryLevelDateTime": "2022-04-17T14:30:00Z"
       }
     ],
-    "batteriesLevelesAtTheEnd": [
+    "batteriesLevelsAtTheEnd": [
       {
         "batteryId": "",
         "batteryLevel": 0,
