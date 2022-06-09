@@ -1,5 +1,6 @@
 ﻿using IoT.Simulator.Extensions;
 using IoT.Simulator.Models;
+using IoT.Simulator.Services.Business;
 using IoT.Simulator.Tools;
 
 using Microsoft.Extensions.Logging;
@@ -16,14 +17,19 @@ namespace IoT.Simulator.Services
     public class CustomFuelingTelemetryMessageService : ITelemetryMessageService
     {
         private ILogger _logger;
+        private IGeoLocalizationService _geoLocalizationService;
         private string fileTemplatePath = @"./Messages/fueling.v1.json";
 
-        public CustomFuelingTelemetryMessageService(ILoggerFactory loggerFactory)
+        public CustomFuelingTelemetryMessageService(IGeoLocalizationService geoLocalizationService,ILoggerFactory loggerFactory)
         {
+            if (geoLocalizationService == null)
+                throw new ArgumentNullException(nameof(geoLocalizationService));
+
             if (loggerFactory == null)
                 throw new ArgumentNullException(nameof(loggerFactory));
 
-            _logger = loggerFactory.CreateLogger<CustomTelemetryMessageService>();
+            _geoLocalizationService = geoLocalizationService;
+            _logger = loggerFactory.CreateLogger<CustomTelemetryMessageService>();            
         }
 
         public async Task<string> GetMessageAsync()
@@ -90,12 +96,7 @@ namespace IoT.Simulator.Services
                 data.Value.RegularPressure = (decimal)r.Next(1000, 1300);
                 data.Value.InterlockOverride = false;
 
-                if (data.Value.Position != null)
-                {
-                    data.Value.Position.Latitude = data.Value.Position.Latitude + (decimal)r.Next(5, 20) / 10;
-                    data.Value.Position.Longitude = data.Value.Position.Longitude + (decimal)r.Next(5, 20) / 10;
-                    data.Value.Position.PositionDateTime = messageConstructionDate;
-                }
+                data.Value.Position = _geoLocalizationService.RandomizePosition(data.Value.Position, PositionRandomType.Forward, RandomPositionPrecision.m);
 
                 data.MessageDateTime = messageConstructionDate;
                 data.Value.BatteryLevelsAtStart = new BatteryData[]
