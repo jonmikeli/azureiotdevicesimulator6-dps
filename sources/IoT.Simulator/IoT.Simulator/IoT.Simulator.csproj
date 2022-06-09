@@ -84,6 +84,9 @@ The first version was based on symmetric keys and a new version adds CA X509 key
     <None Update="dpssettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Messages\commissioning - Copy.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Messages\commissioning.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

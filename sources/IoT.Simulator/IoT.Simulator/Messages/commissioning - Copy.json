@@ -5,5 +5,11 @@
   "messageDateTime": "2022-05-04T12:00:00Z",
   "clientId": "809d38e8-bdaa-4588-bfbc-d5036d0de7bd",
   "companyId": "dd07bcd7-466c-45f7-9479-2dac4efc7dc5",
-  "resourceTypeId": "1"
+  "resourceTypeId": "1",
+  "building": {
+    "buildingId": "",
+    "floor": "",
+    "departmentId": "",
+    "roomId": null
+  }
 } 
