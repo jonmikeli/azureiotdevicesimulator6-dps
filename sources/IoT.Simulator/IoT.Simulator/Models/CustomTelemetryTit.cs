@@ -75,9 +75,9 @@ namespace IoT.Simulator.Models
         public decimal RegularPressure { get; set; }
         [JsonProperty("interlockOverride")]
         public bool InterlockOverride { get; set; }
-        [JsonProperty("batteryLevelsAtTheBeginning")]
+        [JsonProperty("batteriesLevelsAtTheBeginning")]
         public BatteryData[] BatteryLevelsAtStart { get; set; }
-        [JsonProperty("batteryLevelsAtTheEnd")]
+        [JsonProperty("batteriesLevelsAtTheEnd")]
         public BatteryData[] BatteryLevelsAtEnd { get; set; }
         [JsonProperty("tankLevelsAtTheBeginning")]
         public TankData[] TankLevelsAtStart { get; set; }
