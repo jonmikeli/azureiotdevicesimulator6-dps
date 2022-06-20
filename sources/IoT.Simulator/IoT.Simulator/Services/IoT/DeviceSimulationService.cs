@@ -431,6 +431,31 @@ namespace IoT.Simulator.Services
             }
         }
 
+        internal async Task SendDeviceToCloudSingleCommissioningAsync(string deviceId, CommissioningRequest commissioningRequest)
+        {
+            if (commissioningRequest == null)
+                throw new ArgumentNullException(nameof(commissioningRequest));
+
+            string messageString = JsonConvert.SerializeObject(commissioningRequest);
+            string logPrefix = "commissioning".BuildLogPrefix();
+
+            using (_logger.BeginScope($"{logPrefix}::{DateTime.Now}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::SINGLE COMMISSIONING MESSAGE"))
+            {                                
+                var message = new Message(Encoding.UTF8.GetBytes(messageString));
+                message.Properties.Add("messagetype", "commissioning");
+
+                // Add a custom application property to the message.
+                // An IoT hub can filter on these properties without access to the message body.
+                message.ContentType = "application/json";
+                message.ContentEncoding = "utf-8";
+
+                // Send the tlemetry message
+                await _deviceClient.SendEventAsync(message);
+
+                _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::Sent message: {messageString}.");
+            }
+        }
+
         //Latency tests
         internal async Task SendDeviceToCloudLatencyTestAsync(string deviceId, int interval)
         {
@@ -561,6 +586,9 @@ namespace IoT.Simulator.Services
 
                 await _deviceClient.SetMethodHandlerAsync("SetStatus", SetStatus, null);
                 _logger.LogTrace($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::DIRECT METHOD SetStatus registered.");
+
+                await _deviceClient.SetMethodHandlerAsync("NewCommissioningRequest", NewCommissioningRequest, null);
+                _logger.LogTrace($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::DIRECT METHOD NewCommissioningRequest registered.");
 
                 await _deviceClient.SetMethodHandlerAsync("GenericJToken", GenericJToken, null);
                 _logger.LogTrace($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::DIRECT METHOD GenericJToken registered.");
@@ -832,12 +860,52 @@ namespace IoT.Simulator.Services
                 if (!string.IsNullOrEmpty(statusValue))
                 {
                     statusValue = statusValue.Replace("\"", String.Empty);
-                    
+
                     _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::Set status {statusValue}.");
 
                     _statusManagerService.UpdateStatus(statusValue);
 
                     await GenericTwinReportedUpdateAsync(_deviceId, string.Empty, "status", statusValue);
+
+                    // Acknowlege the direct method call with a 200 success message
+                    result = "{\"result\":\"Executed direct method: " + methodRequest.Name + "\"}";
+                }
+                else
+                {
+                    // Acknowlege the direct method call with a 400 error message
+                    result = "{\"result\":\"Invalid parameter\"}";
+                    status = 400;
+                }
+            }
+            catch (Exception ex)
+            {
+                status = 400;
+                _logger.LogError($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::{ex.Message}.");
+            }
+
+            return new MethodResponse(Encoding.UTF8.GetBytes(result), status);
+        }
+
+        private async Task<MethodResponse> NewCommissioningRequest(MethodRequest methodRequest, object userContext)
+        {
+            string logPrefix = "NewCommissioningRequest".BuildLogPrefix();
+            string result = string.Empty;
+            int status = 200;
+
+            try
+            {
+                var requestContent = Encoding.UTF8.GetString(methodRequest.Data);
+
+                if (string.IsNullOrEmpty(requestContent))
+                    throw new ArgumentNullException(nameof(requestContent));
+                
+                var commissioningRequest = JsonConvert.DeserializeObject<CommissioningRequest>(requestContent);
+
+                if (commissioningRequest != null)
+                {
+                    await SendDeviceToCloudSingleCommissioningAsync(_deviceSettingsDelegate.CurrentValue.ArtifactId, commissioningRequest);                                       
+
+                    _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::Commissioning request sent {requestContent}.");
 
                     // Acknowlege the direct method call with a 200 success message
                     result = "{\"result\":\"Executed direct method: " + methodRequest.Name + "\"}";
