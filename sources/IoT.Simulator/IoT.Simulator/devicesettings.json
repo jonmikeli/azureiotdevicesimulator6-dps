@@ -12,7 +12,7 @@
     "fuelingFrecuency": 10,
     "enableErrorMessages": false,
     "errorFrecuency": 20,
-    "enableCommissioningMessages": true,
+    "enableCommissioningMessages": false,
     "commissioningFrecuency": 60,
     "enableTwinReportedMessages": false,
     "twinReportedMessagesFrecuency": 60,
