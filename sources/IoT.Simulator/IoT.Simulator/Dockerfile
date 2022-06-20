@@ -29,4 +29,4 @@ EXPOSE 8883
 EXPOSE 443
 EXPOSE 5671
 
-LABEL version="v6.0" environment="dev" author="Jon Mikel Inza" copyright="JMI" github="https://github.com/jonmikeli/azureiotdevicesimulator6-dps" name="IoT.Simulator.Dps" description="IoT Simulator docker image. Implements DPS provisioning with symmetric key and CA X509 authentication." tags="IoT;Simulator;DPS;IoTHub;Azure IoT SDK;net6;csharp;Symmetric key;CA X509"
+LABEL version="v6.0" environment="dev" author="Jon Mikel Inza" copyright="JMI" github="https://github.com/jonmikeli/azureiotdevicesimulator6-dps" name="IoT.Simulator.Dps" description="IoT Simulator docker image. Implements DPS provisioning with symmetric key and CA X509 authentication. This version includes specific features like status reporting D2C (reported properties), status Direct Methods, commissioning messages and commissioning Direct Methods." tags="IoT;Simulator;DPS;IoTHub;Azure IoT SDK;net6;csharp;Symmetric key;CA X509"
