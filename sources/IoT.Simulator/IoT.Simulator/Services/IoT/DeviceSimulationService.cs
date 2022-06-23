@@ -855,11 +855,12 @@ namespace IoT.Simulator.Services
 
             try
             {
-                var statusValue = Encoding.UTF8.GetString(methodRequest.Data);
+                string jsonContent = Encoding.UTF8.GetString(methodRequest.Data);
 
-                if (!string.IsNullOrEmpty(statusValue))
+                if (!string.IsNullOrEmpty(jsonContent))
                 {
-                    statusValue = statusValue.Replace("\"", String.Empty);
+                    JObject jObject = JObject.Parse(jsonContent);
+                    string statusValue = jObject["status"].Value<string>();
 
                     _logger.LogDebug($"{logPrefix}::{_deviceSettingsDelegate.CurrentValue.ArtifactId}::Set status {statusValue}.");
 
