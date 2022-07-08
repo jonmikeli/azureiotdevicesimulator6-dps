@@ -6,6 +6,9 @@ namespace IoT.Simulator.Models
 {
     internal class CommissioningRequest
     {
+        [JsonProperty("$schema")]
+        public string Schema { get; set; }
+
         [JsonProperty("deviceId")]
         public string DeviceId { get; set; }
 
